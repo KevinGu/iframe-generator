@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import PreviewArea from './PreviewArea'
-import { useIframePerformance } from '@/hooks/useIframePerformance'
+import { useIframeStatus } from '@/hooks/useIframePerformance'
 import { IFrameConfig } from '@/app/config/iframeTypes'
 
 interface IframeLoaderProps {
@@ -21,7 +21,7 @@ const IframeLoader: React.FC<IframeLoaderProps> = ({ url, config }) => {
     handleLoad,
     handleError,
     loadTime
-  } = useIframePerformance(url, config.performance)
+  } = useIframeStatus(url, config.performance)
 
   useEffect(() => {
     const checkEmbed = async () => {

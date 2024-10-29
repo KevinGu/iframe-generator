@@ -1,20 +1,15 @@
 "use client";
 
-import React from "react";
-import { presets } from "../config/presets";
+import React, { useEffect, useState, useCallback } from "react";
 import { IFrameConfig } from "../config/iframeTypes";
-import { useIframePerformance } from "../../hooks/useIframePerformance";
-import { useAutoHeight } from "../../hooks/useAutoHeight";
-import { useIframeLoading } from "../../hooks/useIframeLoading";
-import { usePreloadStrategy } from "../../hooks/usePreloadStrategy";
-import { useLazyLoading } from "../../hooks/useLazyLoading";
+import { useIframeStatus } from "../../hooks/useIframeStatus";
 import SettingsTabs from "../../components/SettingsTabs";
 import PreviewArea from "../../components/PreviewArea";
 import CodePreview from "../../components/CodePreview";
-import { isValidUrl, radiusPresets } from "../../utils/helpers";
+import { isValidUrl, radiusPresets } from "../../utils/iframeHelpers";
 import { Input } from "@nextui-org/react";
 import { Link2, LinkIcon } from "lucide-react";
-import { generateIframeProps } from "@/utils/iframeUtils";
+import { generateIframeProps } from "@/utils/iframeHelpers";
 
 // 默认配置更新
 const defaultConfig: IFrameConfig = {
@@ -28,138 +23,114 @@ const defaultConfig: IFrameConfig = {
   borderStyle: "none",
   borderColor: "transparent",
   borderRadiusName: "none",
-  scrolling: false,
+  scrolling: true,
   allowFullscreen: true,
   backgroundColor: "#ffffff",
   padding: "0px",
-  loadingAnimation: "none",
   customClass: "",
   sandbox: [],
   referrerPolicy: "strict-origin-when-cross-origin",
-  allowedDomains: [],
   title: "",
   ariaLabel: "",
-  description: "",
-  lazyLoad: false,
-  autoHeight: false,
-  preload: "auto",
+  name: "",
   loading: "eager",
   importance: "auto",
-  timeout: 10000,
-  fallbackContent: "<p>加载失败，请刷新重试</p>",
-  csp: {
-    enabled: true,
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
-      frameSrc: ["'self'"],
-    },
-  },
-  xFrameOptions: "SAMEORIGIN",
-  securityHeaders: {
-    "X-Content-Type-Options": "nosniff",
-    "X-XSS-Protection": "1; mode=block",
-  },
-  domainWhitelist: [],
-  securityMode: "strict",
-  performance: {
-    preconnect: true,
-    preload: true,
-    priority: "auto",
-    timeout: 10000,
-    retryCount: 3,
-    retryDelay: 1000,
-    errorFallback: "<div>加载失败，请刷新重试</div>",
-    loadingIndicator: true,
-    loadingAnimation: "spinner",
-    monitorPerformance: true,
-  },
+  allow: ["fullscreen"],
 };
 
 const IFrameGenerator: React.FC = () => {
-  // 添加历史记录状态
-  const [urlHistory, setUrlHistory] = React.useState<
+  // 添加历史记录状态，初始为空数组
+  const [urlHistory, setUrlHistory] = useState<
     Array<{
       url: string;
       config: IFrameConfig;
       timestamp: number;
     }>
-  >(() => {
-    // 从localStorage加载历史记录，并只保留最新的10条
-    const saved = localStorage.getItem("iframe-url-history");
-    const history = saved ? JSON.parse(saved) : [];
-    // 如果超过10条，只保留最新的10条
-    const trimmedHistory = history.slice(0, 10);
-    // 如果历史记录被裁剪了，更新localStorage
-    if (history.length > 10) {
-      localStorage.setItem("iframe-url-history", JSON.stringify(trimmedHistory));
+  >([]);
+
+  // 添加初始化 effect
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("iframe-url-history");
+      const history = saved ? JSON.parse(saved) : [];
+      // 如果超过10条，只保留最新的10条
+      const trimmedHistory = history.slice(0, 10);
+      // 如果历史记录被裁剪了，更新localStorage
+      if (history.length > 10) {
+        localStorage.setItem(
+          "iframe-url-history",
+          JSON.stringify(trimmedHistory)
+        );
+      }
+      setUrlHistory(trimmedHistory);
+    } catch (error) {
+      console.error("Failed to load history:", error);
+      setUrlHistory([]);
     }
-    return trimmedHistory;
-  });
+  }, []);
 
   // 管理配置状态
-  const [config, setConfig] = React.useState<IFrameConfig>(defaultConfig);
-  const [errors, setErrors] = React.useState({
+  const [config, setConfig] = useState<IFrameConfig>(defaultConfig);
+  const [errors, setErrors] = useState({
     url: false,
     width: false,
     height: false,
   });
 
   /**
-   * 保存到历史记录
+   * 统一的配置更新函数
    * 只在URL完整且有效时保存
    */
-  const saveToHistory = (url: string, currentConfig: IFrameConfig) => {
-    // 确保URL是完整且有效的
-    if (!url || !isValidUrl(url) || !url.includes(".")) {
-      return;
-    }
+  const updateConfig = useCallback(
+    (
+      updates: Partial<IFrameConfig> | ((prev: IFrameConfig) => IFrameConfig)
+    ) => {
+      setConfig((prev) => {
+        const newConfig =
+          typeof updates === "function"
+            ? updates(prev)
+            : { ...prev, ...updates };
 
-    const newHistory = [
-      {
-        url,
-        config: currentConfig,
-        timestamp: Date.now(),
-      },
-      ...urlHistory.filter((item) => item.url !== url),
-    ].slice(0, 10); // 确保只保留10条记录
+        // 只在 URL 有效时保存配置和历史记录
+        if (newConfig.url && isValidUrl(newConfig.url)) {
+          try {
+            // 更新配置存储
+            const savedConfigs = JSON.parse(
+              localStorage.getItem("iframeConfigs") || "{}"
+            );
+            savedConfigs[newConfig.url] = newConfig;
+            localStorage.setItem("iframeConfigs", JSON.stringify(savedConfigs));
 
-    setUrlHistory(newHistory);
-    localStorage.setItem("iframe-url-history", JSON.stringify(newHistory));
-  };
+            // 更新历史记录
+            const currentHistory = JSON.parse(
+              localStorage.getItem("iframe-url-history") || "[]"
+            );
+            const newHistory = [
+              {
+                url: newConfig.url,
+                config: newConfig,
+                timestamp: Date.now(),
+              },
+              ...currentHistory.filter(
+                (item: any) => item.url !== newConfig.url
+              ),
+            ].slice(0, 10);
 
-  /**
-   * 核心验证函数
-   * 根据配置项的键值进行验证，并更新配置和错误状态
-   * @param key 配置项的键
-   * @param value 配置项的值
-   */
-  const validateAndUpdateConfig = (key: keyof IFrameConfig, value: any) => {
-    let isValid = true;
-
-    switch (key) {
-      case "url":
-        setConfig((prev) => ({ ...prev, url: value }));
-        isValid = isValidUrl(value);
-        setErrors((prev) => ({ ...prev, url: !isValid }));
-        return;
-      case "width":
-      case "height":
-        const numericValue = value.replace(/[^0-9]/g, "");
-        isValid = numericValue !== "" && parseInt(numericValue) > 0;
-        setErrors((prev) => ({ ...prev, [key]: !isValid }));
-        if (isValid) {
-          setConfig((prev) => ({ ...prev, [key]: numericValue }));
+            localStorage.setItem(
+              "iframe-url-history",
+              JSON.stringify(newHistory)
+            );
+            setUrlHistory(newHistory);
+          } catch (error) {
+            console.error("Failed to save config and history:", error);
+          }
         }
-        break;
-      default:
-        setConfig((prev) => ({ ...prev, [key]: value }));
-        return;
-    }
-  };
+
+        return newConfig;
+      });
+    },
+    []
+  );
 
   /**
    * 处理URL输入完成事件
@@ -167,20 +138,8 @@ const IFrameGenerator: React.FC = () => {
    */
   const handleUrlInputComplete = (url: string) => {
     if (url && isValidUrl(url) && url.includes(".")) {
-      saveToHistory(url, config);
+      updateConfig({ url });
     }
-  };
-
-  /**
-   * 应用预设配置
-   * 根据预设名称应用相应的配置
-   * @param presetName 预设名称
-   */
-  const applyPreset = (presetName: keyof typeof presets) => {
-    setConfig((prev) => ({
-      ...prev,
-      ...presets[presetName],
-    }));
   };
 
   /**
@@ -234,9 +193,10 @@ const IFrameGenerator: React.FC = () => {
     const styles = {
       backgroundColor: config.backgroundColor,
       padding: config.padding,
-      border: config.border
-        ? `${config.borderStyle} ${config.borderColor}`
-        : "none",
+      border:
+        config.borderStyle !== "none"
+          ? `${config.borderSize}px ${config.borderStyle} ${config.borderColor}`
+          : "none",
       borderRadius: radiusPresets[config.borderRadiusName],
     };
     return styles;
@@ -246,36 +206,39 @@ const IFrameGenerator: React.FC = () => {
   const {
     loading,
     error,
-    retryCount,
-    loadTime,
-    retry,
     iframeRef,
     handleLoad,
     handleError: handleIframeError,
-  } = useIframePerformance(config.url, config.performance);
-
-  // 使用自定义 Hook 实现自动调整 iframe 高度
-  const { adjustHeight } = useAutoHeight(iframeRef);
-
-  // 使用自定义 Hook 管理 iframe 加载状态和超时
-  const { loadingState, handleSuccess, handleError } = useIframeLoading(
-    config.url,
-    config.performance.timeout
-  );
-
-  // 使用自定义 Hook 实现预加载策略
-  usePreloadStrategy(config.url, config);
-
-  // 使用自定义 Hook 实现懒加载
-  useLazyLoading(iframeRef, config.url, config.lazyLoad);
+  } = useIframeStatus(config.url);
 
   /**
    * 删除历史记录
    */
   const removeFromHistory = (urlToRemove: string) => {
-    const newHistory = urlHistory.filter((item) => item.url !== urlToRemove);
-    setUrlHistory(newHistory);
-    localStorage.setItem("iframe-url-history", JSON.stringify(newHistory));
+    try {
+      const newHistory = urlHistory.filter((item) => item.url !== urlToRemove);
+      setUrlHistory(newHistory);
+      localStorage.setItem("iframe-url-history", JSON.stringify(newHistory));
+    } catch (error) {
+      console.error("Failed to remove from history:", error);
+    }
+  };
+
+  // URL 输入处理
+  const handleUrlChange = (url: string) => {
+    updateConfig({ url });
+    setErrors((prev) => ({
+      ...prev,
+      url: !isValidUrl(url),
+    }));
+  };
+
+  // 从历史记录加载配置
+  const loadFromHistory = (historyItem: {
+    url: string;
+    config: IFrameConfig;
+  }) => {
+    updateConfig(historyItem.config);
   };
 
   return (
@@ -305,9 +268,7 @@ const IFrameGenerator: React.FC = () => {
                   variant="underlined"
                   labelPlacement="outside-left"
                   value={config.url}
-                  onChange={(e) =>
-                    validateAndUpdateConfig("url", e.target.value)
-                  }
+                  onChange={(e) => handleUrlChange(e.target.value)}
                   isInvalid={errors.url}
                   errorMessage={errors.url && "请输入有效的网页地址"}
                   startContent={
@@ -380,10 +341,8 @@ const IFrameGenerator: React.FC = () => {
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <SettingsTabs
               config={config}
-              setConfig={setConfig}
+              updateConfig={updateConfig}
               errors={errors}
-              validateAndUpdateConfig={validateAndUpdateConfig}
-              applyPreset={applyPreset}
             />
           </div>
 
@@ -391,10 +350,7 @@ const IFrameGenerator: React.FC = () => {
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <PreviewArea
               config={config}
-              loading={loading}
               error={error}
-              retry={retry}
-              retryCount={retryCount}
               iframeRef={iframeRef}
               handleLoad={handleLoad}
               handleIframeError={handleIframeError}

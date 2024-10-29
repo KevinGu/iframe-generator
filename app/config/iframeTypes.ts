@@ -16,60 +16,54 @@ export interface IFrameConfig {
   allowFullscreen: boolean;
   backgroundColor: string;
   padding: string;
-  loadingAnimation: string;
   customClass: string;
   sandbox: string[];
   referrerPolicy: HTMLAttributeReferrerPolicy;
-  allowedDomains: string[];
   title: string;
   ariaLabel: string;
-  description: string;
-  lazyLoad: boolean;
-  autoHeight: boolean;
-  preload: "none" | "auto";
-  loading: "eager" | "lazy";
+  name: string;
+  loading: "lazy" | "eager";
   importance: "auto" | "high" | "low";
-  timeout?: number;
-  fallbackContent?: string;
-  csp: {
-    enabled: boolean;
-    directives: {
-      defaultSrc: string[];
-      scriptSrc: string[];
-      styleSrc: string[];
-      imgSrc: string[];
-      connectSrc: string[];
-      frameSrc: string[];
-    };
-  };
-  xFrameOptions: "DENY" | "SAMEORIGIN" | "ALLOW-FROM";
-  xFrameOptionsAllowFrom?: string;
-  securityHeaders: {
-    [key: string]: string;
-  };
-  domainWhitelist: string[];
-  securityMode: "strict" | "moderate" | "relaxed";
-  performance: {
-    preconnect: boolean;
-    preload: boolean;
-    priority: "high" | "low" | "auto";
-    timeout: number;
-    retryCount: number;
-    retryDelay: number;
-    errorFallback: string;
-    loadingIndicator: boolean;
-    loadingAnimation: "spinner" | "skeleton" | "blur" | "none";
-    monitorPerformance: boolean;
-  };
+  allow: string[];
 }
 
-// 添加自定义错误类
-export class IframeError extends Error {
-  type?: string;
-  
-  constructor(message: string, type?: string) {
-    super(message);
-    this.name = 'IframeError';
-    this.type = type;
-  }
+// 添加错误类型定义
+export type IframeErrorType =
+  | "X_FRAME_OPTIONS"
+  | "CSP_VIOLATION"
+  | "NETWORK_ERROR"
+  | "LOAD_ERROR"
+  | "TIMEOUT"
+  | "SECURITY_ERROR"
+  | "PARTIAL_ACCESS";
+
+export interface IframeError {
+  type: IframeErrorType;
+  message: string;
+  details?: string;
 }
+
+export interface IframeErrorMessage {
+  title: string;
+  message: string;
+  suggestion: string;
+}
+
+// 添加错误消息映射函数
+export const getIframeErrorMessage = (error: IframeError): IframeErrorMessage => {
+  switch (error.type) {
+    case "X_FRAME_OPTIONS":
+      return {
+        title: "页面限制嵌入",
+        message: "该网页设置了 X-Frame-Options 限制，无法被嵌入。",
+        suggestion: "建议：尝试联系网站管理员获取嵌入权限，或选择其他可嵌入的页面。",
+      };
+    // ... 其他错误类型的处理 ...
+    default:
+      return {
+        title: "未知错误",
+        message: error.message || "加载过程中发生错误。",
+        suggestion: "建议：请刷新页面重试。",
+      };
+  }
+};
