@@ -1,0 +1,13 @@
+{
+  "Nav": {
+    "Converters": "Konverter Tanggal dan Waktu",
+    "Calculators": "Kalkulator Tanggal dan Waktu"
+  },
+  "LanguageSelection": {
+    "title": "Preferensi Bahasa Terdeteksi",
+    "message": "Kami mendeteksi bahwa bahasa pilihan Anda adalah {detectedLanguage}. Apakah Anda ingin beralih ke bahasa ini?",
+    "cancel": "Pertahankan bahasa saat ini",
+    "switchLanguage": "Beralih ke {language}",
+    "dontShowAgain": "Jangan tampilkan lagi"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "Nav": {
+    "Converters": "日期和时间转换器",
+    "Calculators": "日期和时间计算器",
+    "Widgets": "时钟小工具"
+  },
+  "LanguageSelection": {
+    "title": "检测到语言偏好",
+    "message": "我们检测到您的首选语言是{detectedLanguage}。您是否希望切换到这种语言？",
+    "cancel": "保持当前语言",
+    "switchLanguage": "切换到{language}",
+    "dontShowAgain": "不再提示"
+  }
+}

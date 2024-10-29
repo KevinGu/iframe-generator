@@ -1,0 +1,13 @@
+{
+  "Nav": {
+    "Converters": "Convertitore di Data e Ora",
+    "Calculators": "Calcolatore di Data e Ora"
+  },
+  "LanguageSelection": {
+    "title": "Preferenza linguistica rilevata",
+    "message": "Abbiamo rilevato che la tua lingua preferita è {detectedLanguage}. Vuoi passare a questa lingua?",
+    "cancel": "Mantieni la lingua corrente",
+    "switchLanguage": "Passa a {language}",
+    "dontShowAgain": "Non mostrare più"
+  }
+}

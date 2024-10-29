@@ -1,0 +1,13 @@
+{
+  "Nav": {
+    "Converters": "Tarih ve Saat Dönüştürücü",
+    "Calculators": "Tarih ve Saat Hesaplayıcı"
+  },
+  "LanguageSelection": {
+    "title": "Dil tercihi tespit edildi",
+    "message": "Tercih ettiğiniz dilin {detectedLanguage} olduğunu tespit ettik. Bu dile geçmek ister misiniz?",
+    "cancel": "Mevcut dili koru",
+    "switchLanguage": "{language} diline geç",
+    "dontShowAgain": "Tekrar gösterme"
+  }
+}

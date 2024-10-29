@@ -1,0 +1,15 @@
+{
+  "Nav": {
+    "Converters": "Convertisseur de Date et Heure",
+    "Calculators": "Calculateur de Date et Heure",
+    "Widgets": "Widget d'horloge"
+  },
+
+  "LanguageSelection": {
+    "title": "Préférence linguistique détectée",
+    "message": "Nous avons détecté que votre langue préférée est {detectedLanguage}. Voulez-vous passer à cette langue ?",
+    "cancel": "Garder la langue actuelle",
+    "switchLanguage": "Passer à {language}",
+    "dontShowAgain": "Ne plus afficher"
+  }
+}

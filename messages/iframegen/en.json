@@ -1,0 +1,38 @@
+{
+  "Index": {
+    "metadata": {
+      "title": "{websiteName} - Date & Time Calculators, Converters, and Tools",
+      "desc": "Discover precise date and time calculators at {websiteName}. Convert, calculate, and explore time differences effortlessly. Use our easy-to-navigate tools for all your time and date needs."
+    }
+  },
+  "Nav": {
+    "Index": "Home",
+    "Converters": "Date & Time Converter",
+    "Calculators": "Date & Time Calculator",
+     "Widgets": "Clock Widget"
+  },
+  "LanguageSelection": {
+    "title": "Language Preference Detected",
+    "message": "We've detected that your preferred language is {detectedLanguage}. Would you like to switch to this language?",
+    "cancel": "Stay in Current Language",
+    "switchLanguage": "Switch to {language}",
+    "dontShowAgain": "Don't show again"
+  },
+  "timezone": {
+    "label": "Timezone",
+    "placeholder": "Select timezone",
+    "names": {
+      "Asia/Shanghai": "Beijing Time",
+      "Asia/Tokyo": "Tokyo Time",
+      "America/New_York": "New York Time",
+      "Europe/London": "London Time",
+      "Asia/Seoul": "Seoul Time",
+      "Europe/Paris": "Paris Time",
+      "America/Los_Angeles": "Los Angeles Time",
+      "Australia/Sydney": "Sydney Time",
+      "Asia/Singapore": "Singapore Time",
+      "Asia/Dubai": "Dubai Time"
+    },
+    "format": "{localName} ({zoneName}, UTC{offset}) {abbr}"
+  }
+}

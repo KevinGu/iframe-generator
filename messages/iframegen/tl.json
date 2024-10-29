@@ -1,0 +1,13 @@
+{
+  "Nav": {
+    "Converters": "Tagapalit ng Petsa at Oras",
+    "Calculators": "Kalkulador ng Petsa at Oras"
+  },
+  "LanguageSelection": {
+    "title": "Natukoy ang Preference sa Wika",
+    "message": "Nadetect namin na ang iyong paboritong wika ay {detectedLanguage}. Gusto mo bang lumipat sa wikang ito?",
+    "cancel": "Manatili sa Kasalukuyang Wika",
+    "switchLanguage": "Lumipat sa {language}",
+    "dontShowAgain": "Huwag nang ipakita muli"
+  }
+}

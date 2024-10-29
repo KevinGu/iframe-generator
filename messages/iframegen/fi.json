@@ -1,0 +1,15 @@
+{
+  "Nav": {
+    "Converters": "Päivämäärä- ja Aikamuunnin",
+    "Calculators": "Päivämäärä- ja Aikalaskin",
+    "Widgets": "Kellonaikawidget"
+  },
+
+  "LanguageSelection": {
+    "title": "Kieliasetus havaittu",
+    "message": "Olemme havainneet, että suosimasi kieli on {detectedLanguage}. Haluatko vaihtaa tähän kieleen?",
+    "cancel": "Pidä nykyinen kieli",
+    "switchLanguage": "Vaihda kieleen {language}",
+    "dontShowAgain": "Älä näytä uudelleen"
+  }
+}

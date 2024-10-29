@@ -1,0 +1,14 @@
+{
+  "Nav": {
+    "Converters": "محول التاريخ والوقت",
+    "Calculators": "حاسبة التاريخ والوقت"
+  },
+
+  "LanguageSelection": {
+    "title": "تم اكتشاف تفضيل اللغة",
+    "message": "لقد اكتشفنا أن لغتك المفضلة هي {detectedLanguage}. هل ترغب في التحويل إلى هذه اللغة؟",
+    "cancel": "الاحتفاظ باللغة الحالية",
+    "switchLanguage": "التحويل إلى {language}",
+    "dontShowAgain": "عدم العرض مرة أخرى"
+  }
+}
