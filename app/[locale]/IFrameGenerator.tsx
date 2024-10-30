@@ -29,7 +29,7 @@ const defaultConfig: IFrameConfig = {
   padding: "0px",
   customClass: "",
   sandbox: [],
-  referrerPolicy: "strict-origin-when-cross-origin",
+  referrerPolicy: undefined,
   title: "",
   ariaLabel: "",
   name: "",

@@ -529,7 +529,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
               </div>
               <div className="p-5 bg-gray-50 rounded-lg">
                 <RadioGroup
-                  value={config.referrerPolicy}
+                  value={config.referrerPolicy || ""}
                   onValueChange={(value) =>
                     updateConfig((prev) => ({
                       ...prev,

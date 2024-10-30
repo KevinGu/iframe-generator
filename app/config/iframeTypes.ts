@@ -18,7 +18,7 @@ export interface IFrameConfig {
   padding: string;
   customClass: string;
   sandbox: string[];
-  referrerPolicy: HTMLAttributeReferrerPolicy;
+  referrerPolicy?: HTMLAttributeReferrerPolicy;
   title: string;
   ariaLabel: string;
   name: string;
