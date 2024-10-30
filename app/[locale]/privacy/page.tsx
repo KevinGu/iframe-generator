@@ -1,6 +1,6 @@
 'use client';
 
-import Privacy from "@/app/[locale]/(main)/privacy/privacy.mdx"
+import Privacy from "@/app/[locale]/privacy/privacy.mdx"
 
 export default function PrivacyPolicy() {
   return (

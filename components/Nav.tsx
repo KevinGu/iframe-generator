@@ -108,9 +108,9 @@ export default async function Nav({ locale }: { locale: string }) {
 
       {/* 右侧内容 */}
       <NavbarContent justify="end" className="flex items-center gap-4">
-        <NavbarItem className="hidden lg:flex">
+        {/* <NavbarItem className="hidden lg:flex">
           <LocaleSwitcher />
-        </NavbarItem>
+        </NavbarItem> */}
         <NavbarMenuToggle className="sm:hidden" />
       </NavbarContent>
 

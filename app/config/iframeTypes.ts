@@ -35,6 +35,7 @@ export type IframeErrorType =
   | "LOAD_ERROR"
   | "TIMEOUT"
   | "SECURITY_ERROR"
+  | "CSP_ERROR"
   | "PARTIAL_ACCESS";
 
 export interface IframeError {
@@ -54,16 +55,27 @@ export const getIframeErrorMessage = (error: IframeError): IframeErrorMessage =>
   switch (error.type) {
     case "X_FRAME_OPTIONS":
       return {
-        title: "页面限制嵌入",
-        message: "该网页设置了 X-Frame-Options 限制，无法被嵌入。",
-        suggestion: "建议：尝试联系网站管理员获取嵌入权限，或选择其他可嵌入的页面。",
+        title: "Embedding Restricted",
+        message: "This webpage has X-Frame-Options restrictions and cannot be embedded.",
+        suggestion: "Suggestion: Try contacting the site administrator for embedding permissions, or choose another page.",
       };
-    // ... 其他错误类型的处理 ...
+    case "CSP_ERROR":
+      return {
+        title: "Content Security Policy Restriction",
+        message: "This webpage has Content Security Policy (CSP) restrictions that prevent iframe display.",
+        suggestion: "Suggestion: Please choose another page that allows embedding, or contact the site administrator.",
+      };
+    case "SECURITY_ERROR":
+      return {
+        title: "Security Restriction",
+        message: "This page cannot be embedded due to security policy restrictions.",
+        suggestion: "Suggestion: Please check the target website's security policy settings or choose another page.",
+      };
     default:
       return {
-        title: "未知错误",
-        message: error.message || "加载过程中发生错误。",
-        suggestion: "建议：请刷新页面重试。",
+        title: "Unknown Error",
+        message: error.message || "An error occurred during loading.",
+        suggestion: "Suggestion: Please refresh the page and try again.",
       };
   }
 };

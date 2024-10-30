@@ -10,7 +10,8 @@ import {
 import { getFontClass } from "@/app/font/fonts";
 
 export default async function Footer({ locale }: { locale: string }) {
-  const logo = (await import(`@/public/${WEBSITE_PUBLIC_DIR}/logo.svg`)).default;
+  const logo = (await import(`@/public/${WEBSITE_PUBLIC_DIR}/logo.svg`))
+    .default;
 
   const navT = await getTranslations("Nav");
   const commonT = await getTranslations("Common");
@@ -19,7 +20,9 @@ export default async function Footer({ locale }: { locale: string }) {
   const fontClass = getFontClass(locale);
 
   return (
-    <footer className={`bg-gradient-to-r from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 shadow-lg ${fontClass.sans}`}>
+    <footer
+      className={`bg-gradient-to-r from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 shadow-lg ${fontClass.sans}`}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo & Description */}
@@ -32,17 +35,18 @@ export default async function Footer({ locale }: { locale: string }) {
             >
               <Image
                 priority
-                width={140}
+                height={100}
                 src={logo}
-                alt={`${WEBSITE_NAME} Logo`}
-                className="transition-transform duration-300 hover:scale-105"
+                alt={WEBSITE_NAME}
+                className="hidden sm:block h-10"
               />
             </Link>
             <p className="text-gray-700 text-sm">
-              {WEBSITE_NAME} is a versatile platform offering a range of time-based calculators and tools. 
-              From calculating future and past dates to converting time units and exploring time zones, 
-              {WEBSITE_NAME} provides valuable resources for both casual users and professionals 
-              needing precise time-related calculations and information.
+              {WEBSITE_NAME} is a powerful iframe code generator that helps you
+              create secure, responsive and customizable embedded content. With
+              features like custom styling, security controls, and real-time
+              preview, it's perfect for developers, designers, and content
+              creators who need professional iframe integration.
             </p>
           </div>
 
@@ -131,6 +135,16 @@ export default async function Footer({ locale }: { locale: string }) {
                   className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
                 >
                   AI Tools Show
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://jiashuiyin.com/en"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
+                >
+                  Watermark Adder
                 </a>
               </li>
             </ul>

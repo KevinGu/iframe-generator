@@ -1,6 +1,6 @@
 'use client';
 
-import Terms from "@/app/[locale]/(main)/terms/terms.mdx"
+import Terms from "@/app/[locale]/terms/terms.mdx"
 
 export default function TermsPage() {
   return (

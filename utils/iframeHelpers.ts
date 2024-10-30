@@ -44,10 +44,15 @@ export const referrerPolicyOptions: HTMLAttributeReferrerPolicy[] = [
 ];
 
 // URL 验证函数
-export const isValidUrl = (url: string) => {
-  if (url === "") return true;
-  const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
-  return urlPattern.test(url);
+export const isValidUrl = (url: string): boolean => {
+  try {
+    // 如果没有协议前缀，添加 https://
+    const urlWithProtocol = url.match(/^https?:\/\//) ? url : `https://${url}`;
+    new URL(urlWithProtocol);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 // 尺寸验证函数
@@ -72,13 +77,6 @@ export const generateIframeProps = ({
   devicePresets,
   customStyles = {},
 }: GenerateIframePropsParams) => {
-  // 基础类名
-  const baseClasses = [
-    "w-full",
-    "transition-all",
-    "duration-200",
-    config.customClass,
-  ].filter(Boolean);
 
   // 基础样式
   const baseStyles: React.CSSProperties = {
@@ -113,13 +111,13 @@ export const generateIframeProps = ({
   // 通用 iframe 属性
   const commonProps = {
     src: config.url,
-    className: baseClasses.join(" "),
     loading: config.loading as "lazy" | "eager",
     style: baseStyles,
     ...fullscreenProps,
     ...(config.scrolling ? {} : { scrolling: "no" }),
     ...(config.title ? { title: config.title } : {}),
     ...(config.ariaLabel ? { "aria-label": config.ariaLabel } : {}),
+    ...(config.name ? { name: config.name } : {}),
     ...(config.sandbox.length > 0 ? { sandbox: config.sandbox.join(" ") } : {}),
     ...(config.referrerPolicy ? { referrerPolicy: config.referrerPolicy } : {}),
     ...(config.importance ? { importance: config.importance } : {}),
@@ -134,4 +132,21 @@ export const generateIframeProps = ({
       )
       .join("; "),
   };
+};
+
+// 添加 URL 归一化函数
+export const normalizeUrl = (url: string): string => {
+  try {
+    // 如果没有协议前缀，添加 https://
+    const urlWithProtocol = url.match(/^https?:\/\//) ? url : `https://${url}`;
+    
+    // 创建 URL 对象并移除尾部斜杠
+    const urlObj = new URL(urlWithProtocol);
+    const normalizedUrl = urlObj.toString().replace(/\/+$/, '');
+    
+    return normalizedUrl;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Invalid URL: ${errorMessage}`);
+  }
 }; 

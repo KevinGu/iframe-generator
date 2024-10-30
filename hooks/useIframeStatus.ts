@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { IframeError } from "@/app/config/iframeTypes";
+import { IframeError, IframeErrorType } from "@/app/config/iframeTypes";
 
 /**
  * useIframePerformance Hook
@@ -15,84 +15,151 @@ export const useIframeStatus = (url: string) => {
 
   const iframeRef = useRef<HTMLIFrameElement>(null); // iframe 引用
 
-  /**
-   * 检查是否可以嵌入
-   */
-  const checkEmbed = async (): Promise<boolean> => {
-    if (!url) return false;
-    try {
-      const response = await fetch(
-        `/api/check-embed?url=${encodeURIComponent(url)}`
-      );
-      const data: { canEmbed: boolean; reason?: string } =
-        await response.json();
-      if (!data.canEmbed) {
-        setError({
-          type: "SECURITY_ERROR",
-          message: data.reason || "无法嵌入该页面",
-        });
-        return false;
-      }
-      return true;
-    } catch (e) {
-      setError({
-        type: "NETWORK_ERROR",
-        message: "嵌入检测请求失败",
-        details: (e as Error).message,
-      });
-      return false;
-    }
+  // 添加一个辅助函数来确保 URL 格式一致
+  const ensureProtocol = (inputUrl: string): string => {
+    return inputUrl.match(/^https?:\/\//) ? inputUrl : `https://${inputUrl}`;
+  };
+
+  // 统一的错误处理函数
+  const handleIframeError = (errorType: IframeErrorType, message: string, details?: string) => {
+    setError({
+      type: errorType,
+      message,
+      details
+    });
+    setLoading(false);
   };
 
   /**
-   * 处理 iframe 加载完成
+   * 增强版检查嵌入功能
    */
-  const handleLoad = async () => {
-    console.log("iframeRef", iframeRef);
+  const checkEmbed = async (): Promise<boolean> => {
+    if (!url) return false;
+    
     try {
-      const iframe = iframeRef.current;
-      if (!iframe) return;
+      const fullUrl = ensureProtocol(url);
+      
+      const response = await fetch(
+        `/api/check-embed?url=${encodeURIComponent(fullUrl)}`,
+        {
+          redirect: "follow",
+          signal: AbortSignal.timeout(10000)
+        }
+      );
 
-      // 检查是否可以嵌入
-      const canEmbed = await checkEmbed();
-      if (!canEmbed) {
-        setLoading(false);
-        return;
+      // 如果返回500错误，直接允许嵌入
+      if (response.status === 500) return true;
+
+      const { headers } = await response.json();
+      
+      // 检查 X-Frame-Options
+      const xfo = headers["x-frame-options"]?.toLowerCase();
+      if (xfo === "deny" || xfo === "sameorigin") {
+        handleIframeError(
+          "X_FRAME_OPTIONS",
+          "目标网站禁止嵌入",
+          `X-Frame-Options: ${xfo}`
+        );
+        return false;
       }
 
-      try {
-        const iframeWindow = iframe.contentWindow;
-
-        // 尝试多种方式检测访问权限
-        let accessLevel = "full";
-
-        try {
-          iframeWindow?.location.href;
-        } catch (e) {
-          if (iframeWindow) {
-            accessLevel = "partial";
-          } else {
-            accessLevel = "none";
+      // 检查 Content-Security-Policy
+      const csp = headers["content-security-policy"];
+      if (csp) {
+        const frameAncestorsMatch = csp.match(/frame-ancestors\s+([^;]+)/);
+        if (frameAncestorsMatch) {
+          const allowedOrigins = frameAncestorsMatch[1]
+            .split(' ')
+            .map((origin: string) => origin.replace(/['"]/g, ''));
+          
+          if (allowedOrigins.includes('none') || allowedOrigins.length === 0) {
+            handleIframeError(
+              "CSP_ERROR",
+              "目标网站的CSP策略禁止嵌入",
+              `Content-Security-Policy frame-ancestors: ${allowedOrigins.join(', ')}`
+            );
+            return false;
           }
         }
-
-        if (accessLevel === "none") {
-          setError({
-            type: "SECURITY_ERROR",
-            message: "无法访问嵌入页面的内容（完全跨域限制）",
-            details: "无法获取 contentWindow，可能由于严格的跨域限制。",
-          });
-        } else if (accessLevel === "partial") {
-          console.warn("iframe 内容访问受限，部分功能可能不可用");
-        }
-
-        setError(null);
-        setLoading(false);
-      } catch (e) {
-        handleError(e as Error);
       }
     } catch (e) {
-      handleError(e as Error);
+      console.error("Error checking embed permissions:", e);
+    }
+    return true;
+  };
+
+  // 统一的事件处理
+  useEffect(() => {
+    if (!iframeRef.current) return;
+
+    const handlers = {
+      error: (event: ErrorEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const errorMessage = (event.message || "").toLowerCase();
+        
+        if (errorMessage.includes("content security policy") || 
+            errorMessage.includes("frame-ancestors") || 
+            errorMessage.includes("refused to frame")) {
+          handleIframeError(
+            "CSP_ERROR",
+            "The webpage has Content Security Policy (CSP) restrictions that prevent iframe display",
+            event.message
+          );
+        } else if (errorMessage.includes("x-frame-options")) {
+          handleIframeError(
+            "X_FRAME_OPTIONS",
+            "The webpage has X-Frame-Options restrictions and cannot be embedded",
+            event.message
+          );
+        }
+      },
+      
+      securitypolicyviolation: (e: SecurityPolicyViolationEvent) => {
+        handleIframeError(
+          "CSP_ERROR",
+          "该网页设置了内容安全策略(CSP)限制，不允许在iframe中显示",
+          e.violatedDirective
+        );
+      }
+    };
+
+    // 添加事件监听
+    Object.entries(handlers).forEach(([event, handler]) => {
+      iframeRef.current?.addEventListener(event, handler as any);
+      window.addEventListener(event, handler as any);
+    });
+
+    // 清理事件监听
+    return () => {
+      Object.entries(handlers).forEach(([event, handler]) => {
+        iframeRef.current?.removeEventListener(event, handler as any);
+        window.removeEventListener(event, handler as any);
+      });
+    };
+  }, [iframeRef.current]);
+
+  // 只在 URL 变化时检查一次
+  useEffect(() => {
+    if (url) {
+      setLoading(true);
+      setError(null);
+
+      // 使用处理过的 URL 进行检查
+      const fullUrl = ensureProtocol(url);
+      checkEmbed().then((canEmbed) => {
+        if (!canEmbed) {
+          setLoading(false);
+        }
+      });
+    }
+  }, [url]);
+
+  // 简化 load 事件处理
+  const handleLoad = () => {
+    if (!error) {
+      setLoading(false);
     }
   };
 
@@ -111,7 +178,10 @@ export const useIframeStatus = (url: string) => {
         message: "该网页不允许被嵌入",
         details: error.message,
       };
-    } else if (error instanceof DOMException && error.name === "SecurityError") {
+    } else if (
+      error instanceof DOMException &&
+      error.name === "SecurityError"
+    ) {
       iframeError = {
         type: "SECURITY_ERROR",
         message: "由于安全策略限制，无法加载该页面",
@@ -134,48 +204,6 @@ export const useIframeStatus = (url: string) => {
     setError(iframeError);
     setLoading(false);
   };
-
-  // 监听 URL 变化，重置状态
-  useEffect(() => {
-    if (url) {
-      setLoading(true);
-      setError(null);
-    }
-  }, [url]);
-
-  useEffect(() => {
-    if (!iframeRef.current) return;
-
-    const handleIframeError = (event: ErrorEvent) => {
-      // 阻止事件冒泡
-      event.preventDefault();
-      event.stopPropagation();
-
-      const errorMessage = event.message || "";
-
-      if (
-        errorMessage.includes("X-Frame-Options") ||
-        errorMessage.includes("refused to display") ||
-        errorMessage.includes("Cross-Origin-Opener-Policy")
-      ) {
-        setError({
-          type: "SECURITY_ERROR",
-          message: "该网页不允许被嵌入",
-          details: errorMessage,
-        });
-        setLoading(false);
-      }
-    };
-
-    // 监听 iframe 的加载错误
-    iframeRef.current.addEventListener("error", handleIframeError as any);
-    window.addEventListener("error", handleIframeError);
-
-    return () => {
-      iframeRef.current?.removeEventListener("error", handleIframeError as any);
-      window.removeEventListener("error", handleIframeError);
-    };
-  }, [iframeRef.current]);
 
   return {
     loading, // 当前加载状态
