@@ -9,10 +9,11 @@ export async function generateMetadata({ params }: Props) {
 }
 
 type Props = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
-export default async function Home({ params }: Props) {
+export default async function Home(props: Props) {
+  const params = await props.params;
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
@@ -40,7 +41,7 @@ export default async function Home({ params }: Props) {
             </h2>
             <p className="text-gray-600 leading-relaxed">
               IFrame Generator is the ultimate tool for creating professional
-              iframe embeds. Whether you're embedding content, building
+              iframe embeds. Whether you&apos;re embedding content, building
               responsive layouts, or integrating third-party services, our
               advanced iframe generator provides all the tools you need.
               Generate clean, secure, and optimized iframe code with features
@@ -182,7 +183,8 @@ export default async function Home({ params }: Props) {
               <li className="flex items-start space-x-3">
                 <span className="font-bold text-blue-600">4.</span>
                 <p>
-                  Copy the generated code and paste it into your website's HTML.
+                  Copy the generated code and paste it into your website&apos;s
+                  HTML.
                 </p>
               </li>
             </ol>

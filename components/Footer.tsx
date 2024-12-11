@@ -5,12 +5,11 @@ import {
   WEBSITE_EMAIL,
   WEBSITE_HOST,
   WEBSITE_NAME,
-  WEBSITE_PUBLIC_DIR,
 } from "@/app/config";
 import { getFontClass } from "@/app/font/fonts";
 
 export default async function Footer({ locale }: { locale: string }) {
-  const logo = (await import(`@/public/${WEBSITE_PUBLIC_DIR}/logo.svg`))
+  const logo = (await import(`@/public/logo.svg`))
     .default;
 
   const navT = await getTranslations("Nav");
@@ -45,7 +44,7 @@ export default async function Footer({ locale }: { locale: string }) {
               {WEBSITE_NAME} is a powerful iframe code generator that helps you
               create secure, responsive and customizable embedded content. With
               features like custom styling, security controls, and real-time
-              preview, it's perfect for developers, designers, and content
+              preview, it&apos;s perfect for developers, designers, and content
               creators who need professional iframe integration.
             </p>
           </div>
@@ -154,7 +153,7 @@ export default async function Footer({ locale }: { locale: string }) {
         {/* Divider */}
         <div className="border-t border-blue-200 mt-10 pt-6">
           <p className="text-center text-sm">
-            © {new Date().getFullYear()} Pattern Hub, LLC. All rights reserved.
+            &copy; {new Date().getFullYear()} Pattern Hub, LLC. All rights reserved.
           </p>
         </div>
       </div>

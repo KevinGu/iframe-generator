@@ -7,14 +7,13 @@ export interface MenuItem {
 export interface MenuConfig {
   [host: string]: (
     t: (key: string) => string,
-    commonT: (key: string) => string,
     currentPath: string,
     localePrefix: string
   ) => MenuItem[];
 }
 
 export const menuConfig: MenuConfig = {
-  default: (t, commonT, currentPath, localePrefix) => [
+  default: (t, currentPath, localePrefix) => [
     // {
     //   name: t("Index"),
     //   href: "/",

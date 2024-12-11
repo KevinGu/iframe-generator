@@ -9,7 +9,7 @@ import { GoogleTagManager } from "@next/third-parties/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
-import { WEBSITE_NAME, WEBSITE_PUBLIC_DIR } from "../config";
+import { WEBSITE_NAME } from "../config";
 import FontProvider from "../font/FontProvider";
 import { fontVariables, getFontClass } from "../font/fonts";
 import { routing } from "@/i18n/routing";
@@ -17,16 +17,17 @@ import { notFound } from "next/navigation";
 
 export type LocaleProps = {
   children: ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 type Props = {
-  params: { locale: string };
-  searchParams: { page?: string };
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ page?: string }>;
 };
 
-export async function generateMetadata({ params }: Props) {
-  const favicon = (await import(`@/public/${WEBSITE_PUBLIC_DIR}/favicon.svg`))
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
+  const favicon = (await import(`@/public/favicon.svg`))
     .default;
 
   const t = await getTranslations({
@@ -45,7 +46,17 @@ export function generateStaticParams() {
   return localeCodes.map((locale) => ({ locale }));
 }
 
-async function RootLayout({ children, params: { locale } }: LocaleProps) {
+async function RootLayout(props: LocaleProps) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
+  const {
+    children
+  } = props;
+
   // Ensure that the incoming `locale` is valid
   if (!routing.locales.includes(locale as any)) {
     notFound();

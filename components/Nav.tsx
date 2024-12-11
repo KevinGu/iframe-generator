@@ -1,4 +1,4 @@
-import { WEBSITE_HOST, WEBSITE_NAME, WEBSITE_PUBLIC_DIR } from "@/app/config";
+import { WEBSITE_HOST, WEBSITE_NAME } from "@/app/config";
 import { menuConfig, MenuItem } from "@/app/menuConfig";
 import {
   Link,
@@ -17,12 +17,10 @@ import Image from "next/image";
 import LocaleSwitcher from "./intl/LanguageSwitcher";
 
 export default async function Nav({ locale }: { locale: string }) {
-  const logo = (await import(`@/public/${WEBSITE_PUBLIC_DIR}/logo.svg`))
-    .default;
-  const favicon = (await import(`@/public/${WEBSITE_PUBLIC_DIR}/favicon.svg`))
-    .default;
+  const logo = (await import(`@/public/logo.svg`)).default;
+  const favicon = (await import(`@/public/favicon.svg`)).default;
 
-  const headersList = headers();
+  const headersList = await headers();
   const pathname = headersList.get("x-pathname");
 
   // 定义前缀，默认语言不带前缀
@@ -34,9 +32,11 @@ export default async function Nav({ locale }: { locale: string }) {
   // 使配置文件中的菜单项
   const t = await getTranslations("Nav");
   const commonT = await getTranslations("Common");
-  const menuItems: MenuItem[] = (
-    menuConfig[WEBSITE_PUBLIC_DIR] || menuConfig["default"]
-  )(t, commonT, currentPath, localePrefix);
+  const menuItems: MenuItem[] = menuConfig["default"](
+    t,
+    currentPath,
+    localePrefix
+  );
 
   return (
     <Navbar

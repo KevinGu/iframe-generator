@@ -48,7 +48,7 @@ const devicePresets: Record<DeviceType, DevicePreset> = {
 interface PreviewAreaProps {
   config: IFrameConfig;
   error: IframeError | null;
-  iframeRef: React.RefObject<HTMLIFrameElement>;
+  iframeRef: React.RefObject<HTMLIFrameElement | null>;
   handleLoad: () => void;
   handleIframeError: (error: Error) => void;
   generateStyles: () => React.CSSProperties;

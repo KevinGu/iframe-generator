@@ -41,7 +41,7 @@ const LanguageSelectionModal: React.FC<LanguageSelectionModalProps> = ({
       onOpen();
       // 不在这里设置 lastLanguagePrompt
     }
-  }, [currentLocale]);
+  }, [currentLocale, onOpen]);
 
   const handleLanguageChange = (lang: SupportedLocale) => {
     const newPathname = pathname.replace(`/${currentLocale}`, `/${lang}`);
