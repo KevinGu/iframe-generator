@@ -103,8 +103,8 @@ export const generateIframeProps = ({
     ? {
         allowFullScreen: true,
         allow: [...(config.allow || []), "fullscreen"].join("; "),
-        webkitallowfullscreen: true,
-        mozallowfullscreen: true,
+        webkitallowfullscreen: "true",
+        mozallowfullscreen: "true",
       }
     : {};
 
