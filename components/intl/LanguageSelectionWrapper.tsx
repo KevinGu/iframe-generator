@@ -8,8 +8,8 @@ const isBot = (userAgent: string | null): boolean => {
   return ua.includes('bot') || ua.includes('spider');
 };
 
-const LanguageSelectionWrapper = () => {
-  const headersList = (headers() as unknown as UnsafeUnwrappedHeaders); // 使用 next/headers 获取请求头
+const LanguageSelectionWrapper = async () => {
+  const headersList = await headers(); // 使用 next/headers 获取请求头
   const userAgent = headersList.get('user-agent'); // 返回 string | null
   const botDetected = isBot(userAgent);
 

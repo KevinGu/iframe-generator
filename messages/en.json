@@ -9,7 +9,11 @@
     "Index": "Home",
     "Converters": "Date & Time Converter",
     "Calculators": "Date & Time Calculator",
-     "Widgets": "Clock Widget"
+    "Widgets": "Clock Widget"
+  },
+  "Common": {
+    "about": "About",
+    "resources": "Resources"
   },
   "LanguageSelection": {
     "title": "Language Preference Detected",

@@ -12,9 +12,7 @@ export default async function Footer({ locale }: { locale: string }) {
   const logo = (await import(`@/public/logo.svg`))
     .default;
 
-  const navT = await getTranslations("Nav");
   const commonT = await getTranslations("Common");
-  const tagsT = await getTranslations("Tags");
 
   const fontClass = getFontClass(locale);
 
@@ -52,7 +50,7 @@ export default async function Footer({ locale }: { locale: string }) {
           {/* About */}
           <div>
             <div className="text-gray-900 font-medium mb-4 text-base">
-              {commonT("about", { websiteName: WEBSITE_NAME })}
+              {commonT("about")}
             </div>
             <ul className="space-y-2">
               <li>
