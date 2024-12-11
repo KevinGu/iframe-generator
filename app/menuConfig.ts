@@ -14,20 +14,15 @@ export interface MenuConfig {
 
 export const menuConfig: MenuConfig = {
   default: (t, currentPath, localePrefix) => [
-    // {
-    //   name: t("Index"),
-    //   href: "/",
-    //   isActive: currentPath === `${localePrefix}` || currentPath === `${localePrefix}/`,
-    // },
-    // {
-    //   name: t("Calculators"),
-    //   href: "/calculators/ago-and-from",
-    //   isActive: currentPath.startsWith(`${localePrefix}/calculators`),
-    // },
-    // {
-    //   name: t("Widgets"),
-    //   href: "/widgets",
-    //   isActive: currentPath.startsWith(`${localePrefix}/widgets`),
-    // },
-  ]
+    {
+      name: t("IFrame Generator"),
+      href: "/",
+      isActive: currentPath === `${localePrefix}` || currentPath === `${localePrefix}/`,
+    },
+    {
+      name: t("YouTube Embed"),
+      href: "/youtube",
+      isActive: currentPath.startsWith(`${localePrefix}/youtube`),
+    },
+  ],
 };

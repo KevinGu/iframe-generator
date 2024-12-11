@@ -42,9 +42,9 @@ export default async function Nav({ locale }: { locale: string }) {
     <Navbar
       maxWidth="full"
       position="static"
-      height="3rem"
+      height="3.5rem"
       classNames={{
-        wrapper: "px-4 sm:px-6 lg:px-8 bg-blue-50 ",
+        wrapper: "px-4 sm:px-6 lg:px-8 bg-white border-b border-gray-200",
         item: [
           "flex",
           "relative",
@@ -56,31 +56,27 @@ export default async function Nav({ locale }: { locale: string }) {
           "data-[active=true]:after:left-0",
           "data-[active=true]:after:right-0",
           "data-[active=true]:after:h-0.5",
-          "data-[active=true]:after:bg-blue-700",
-          "transition-all",
-          "duration-200",
-          "ease-in-out",
-          "hover:text-blue-700",
+          "data-[active=true]:after:bg-blue-600",
         ].join(" "),
       }}
     >
       {/* 左侧内容 */}
       <NavbarContent>
-        <NavbarBrand className="flex-none items-center">
+        <NavbarBrand className="flex-none">
           <Link href="/" className="flex items-center">
             <Image
               priority
-              height={30}
+              height={28}
               src={logo}
               alt={WEBSITE_NAME}
-              className="hidden sm:block h-10"
+              className="hidden sm:block"
             />
             <Image
               priority
-              height={32}
+              height={24}
               src={favicon}
               alt={WEBSITE_NAME}
-              className="sm:hidden h-8"
+              className="sm:hidden"
             />
           </Link>
           <LogoJsonLd
@@ -98,7 +94,11 @@ export default async function Nav({ locale }: { locale: string }) {
             <Link
               color={item.isActive ? "primary" : "foreground"}
               href={item.href}
-              className="text-lg font-medium px-4 py-1 h-full hover:border-blue-300 border-b-2 border-transparent"
+              className={[
+                "px-3 py-1",
+                "text-sm font-medium",
+                item.isActive ? "text-blue-600" : "text-gray-600 hover:text-gray-900",
+              ].join(" ")}
             >
               {item.name}
             </Link>
@@ -107,20 +107,20 @@ export default async function Nav({ locale }: { locale: string }) {
       </NavbarContent>
 
       {/* 右侧内容 */}
-      <NavbarContent justify="end" className="flex items-center gap-4">
-        {/* <NavbarItem className="hidden lg:flex">
-          <LocaleSwitcher />
-        </NavbarItem> */}
+      <NavbarContent justify="end">
         <NavbarMenuToggle className="sm:hidden" />
       </NavbarContent>
 
       {/* 移动端菜单 */}
-      <NavbarMenu className="bg-blue-50 bg-opacity-95 pt-8 pb-6 px-6 shadow-lg">
+      <NavbarMenu className="bg-white pt-4 pb-4">
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item.name}-${index}`}>
             <Link
               color={item.isActive ? "primary" : "foreground"}
-              className="w-full text-xl py-3 px-6 mb-2 hover:bg-blue-100 rounded-lg transition-colors duration-150"
+              className={[
+                "w-full px-4 py-2",
+                item.isActive ? "text-blue-600" : "text-gray-600",
+              ].join(" ")}
               href={item.href}
               size="lg"
             >

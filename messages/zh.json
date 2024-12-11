@@ -1,8 +1,17 @@
 {
+  "Index": {
+    "metadata": {
+      "title": "IFrame 和 YouTube 嵌入生成器 - 专业网页嵌入工具",
+      "desc": "免费在线工具，用于生成安全、响应式的 IFrame 和轻量级 YouTube 嵌入。创建具有沙箱安全性、响应式尺寸和优化性能等高级功能的专业网页嵌入。"
+    }
+  },
   "Nav": {
-    "Converters": "日期和时间转换器",
-    "Calculators": "日期和时间计算器",
-    "Widgets": "时钟小工具"
+    "IFrame Generator": "IFrame 生成器",
+    "YouTube Embed": "YouTube 嵌入"
+  },
+  "Common": {
+    "about": "关于",
+    "resources": "资源"
   },
   "LanguageSelection": {
     "title": "检测到语言偏好",
