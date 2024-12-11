@@ -21,6 +21,6 @@ export const config = {
     "/",
     // Set a cookie to remember the previous locale for
     // all requests that have a locale prefix
-    "/((?!api|_next/static|_next/image|assets|favicon.ico|icon.ico|sw.js|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|assets|favicon.ico|favicon.svg|icon.ico|sw.js|sitemap.xml|robots.txt).*)",
   ],
 };
