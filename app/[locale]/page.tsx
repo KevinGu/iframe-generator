@@ -45,10 +45,10 @@ export default async function Home(props: Props) {
             </h2>
             <p className="text-gray-600 leading-relaxed">
               The IFrame Generator is your ultimate solution for creating
-              professional iframe embeds. As the web's leading IFrame Generator
+              professional iframe embeds. As the web&apos;s leading IFrame Generator
               tool, we provide everything you need for seamless iframe
-              integration. The IFrame Generator's advanced features enable
-              secure embedding and responsive design. Whether you're embedding
+              integration. The IFrame Generator&apos;s advanced features enable
+              secure embedding and responsive design. Whether you&apos;re embedding
               content, building responsive layouts, or integrating third-party
               services, our IFrame Generator ensures perfect implementation
               every time.
@@ -208,7 +208,7 @@ export default async function Home(props: Props) {
                   Our IFrame Generator stands out with its combination of
                   professional features, including real-time preview, advanced
                   security controls, responsive design options, and clean code
-                  generation. It's designed for both beginners and professional
+                  generation. It&apos;s designed for both beginners and professional
                   developers.
                 </p>
               </div>
