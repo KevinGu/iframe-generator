@@ -13,27 +13,28 @@ export default async function Footer({ locale }: { locale: string }) {
   const commonT = await getTranslations("Common");
   return (
     <footer
-      className={`bg-gradient-to-r from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 shadow-lg`}
+      className="relative bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 py-16 px-4 sm:px-6 lg:px-8 shadow-lg"
+      role="contentinfo"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
           {/* Logo & Description */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <Link
               href={WEBSITE_HOST}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block"
+              className="inline-block group transition-transform duration-200 hover:scale-105"
             >
               <Image
                 priority
                 height={100}
                 src={logo}
                 alt={WEBSITE_NAME}
-                className="hidden sm:block h-10"
+                className="hidden sm:block h-12 w-auto"
               />
             </Link>
-            <p className="text-gray-700 text-sm">
+            <p className="text-gray-600 text-sm leading-relaxed">
               {WEBSITE_NAME} is a powerful iframe code generator that helps you
               create secure, responsive and customizable embedded content. With
               features like custom styling, security controls, and real-time
@@ -44,34 +45,34 @@ export default async function Footer({ locale }: { locale: string }) {
 
           {/* About */}
           <div>
-            <div className="text-gray-900 font-medium mb-4 text-base">
+            <h2 className="text-gray-900 font-semibold mb-6 text-lg">
               {commonT("about")}
-            </div>
-            <ul className="space-y-2">
+            </h2>
+            <ul className="space-y-3">
               <li>
                 <Link
                   href="/privacy"
                   target="_blank"
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
+                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 group"
                 >
-                  Privacy Policy
+                  <span className="group-hover:underline">Privacy Policy</span>
                 </Link>
               </li>
               <li>
                 <Link
                   href="/terms"
                   target="_blank"
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
+                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 group"
                 >
-                  Terms of Use
+                  <span className="group-hover:underline">Terms of Use</span>
                 </Link>
               </li>
               <li>
                 <Link
                   href={`mailto:${WEBSITE_EMAIL}`}
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
+                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 group"
                 >
-                  {WEBSITE_EMAIL}
+                  <span className="group-hover:underline">{WEBSITE_EMAIL}</span>
                 </Link>
               </li>
             </ul>
@@ -79,34 +80,18 @@ export default async function Footer({ locale }: { locale: string }) {
 
           {/* Resources */}
           <div>
-            <div className="text-gray-900 font-medium mb-4 text-base">
+            <h2 className="text-gray-900 font-semibold mb-6 text-lg">
               {commonT("resources")}
-            </div>
-            <ul className="space-y-2">
-              {/* <li>
-                <Link
-                  href={`/${locale}/sites/p/1`}
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
-                >
-                  {navT("index", { websiteName: WEBSITE_NAME })}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={`/${locale}/tags`}
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
-                >
-                  {tagsT("menu")}
-                </Link>
-              </li> */}
+            </h2>
+            <ul className="space-y-3">
               <li>
                 <a
                   href="https://keyboardcounter.top"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
+                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 group"
                 >
-                  Keyboard Counter
+                  <span className="group-hover:underline">Keyboard Counter</span>
                 </a>
               </li>
               <li>
@@ -114,9 +99,9 @@ export default async function Footer({ locale }: { locale: string }) {
                   href="https://calculatoronline.tools"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
+                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 group"
                 >
-                  Calculator Online Tools
+                  <span className="group-hover:underline">Calculator Online Tools</span>
                 </a>
               </li>
               <li>
@@ -124,9 +109,9 @@ export default async function Footer({ locale }: { locale: string }) {
                   href="https://aitools.show"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
+                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 group"
                 >
-                  AI Tools Show
+                  <span className="group-hover:underline">AI Tools Show</span>
                 </a>
               </li>
               <li>
@@ -134,9 +119,9 @@ export default async function Footer({ locale }: { locale: string }) {
                   href="https://jiashuiyin.com/en"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-blue-800 hover:underline transition-colors duration-200"
+                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 group"
                 >
-                  Watermark Adder
+                  <span className="group-hover:underline">Watermark Adder</span>
                 </a>
               </li>
             </ul>
@@ -144,8 +129,8 @@ export default async function Footer({ locale }: { locale: string }) {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-blue-200 mt-10 pt-6">
-          <p className="text-center text-sm">
+        <div className="border-t border-blue-200/50 mt-12 pt-8">
+          <p className="text-center text-sm text-gray-500">
             &copy; {new Date().getFullYear()} Pattern Hub, LLC. All rights reserved.
           </p>
         </div>

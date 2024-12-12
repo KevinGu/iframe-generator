@@ -19,8 +19,8 @@ export default async function Home(props: Props) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
-        {/* 顶部标题区域 */}
-        <div className="text-center mb-12">
+        {/* Header section */}
+        <header className="text-center mb-12" role="banner">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
             IFrame Generator - Create HTML IFrames Instantly
           </h1>
@@ -31,16 +31,18 @@ export default async function Home(props: Props) {
             security, responsive sizing, and custom styling. Try our free IFrame
             Generator today - perfect for websites, blogs, and web applications.
           </p>
-        </div>
+        </header>
 
-        {/* 客户端组件 */}
-        <IFrameGenerator />
+        {/* Main content */}
+        <main role="main">
+          <IFrameGenerator />
+        </main>
 
         {/* SEO Content Sections */}
         <div className="mt-16 space-y-12 max-w-4xl mx-auto">
           {/* About Section */}
-          <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <section className="space-y-4" aria-labelledby="about-section">
+            <h2 id="about-section" className="text-2xl font-bold text-gray-900">
               About Our Professional IFrame Generator Tool
             </h2>
             <p className="text-gray-600 leading-relaxed">
@@ -53,8 +55,8 @@ export default async function Home(props: Props) {
               services, our IFrame Generator ensures perfect implementation
               every time.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <div className="bg-blue-50 p-6 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8" role="list">
+              <div className="bg-blue-50 p-6 rounded-lg" role="listitem">
                 <h3 className="text-xl font-semibold text-blue-800 mb-3">
                   Secure IFrame Generator
                 </h3>
@@ -64,7 +66,7 @@ export default async function Home(props: Props) {
                   for implementing all security best practices.
                 </p>
               </div>
-              <div className="bg-blue-50 p-6 rounded-lg">
+              <div className="bg-blue-50 p-6 rounded-lg" role="listitem">
                 <h3 className="text-xl font-semibold text-blue-800 mb-3">
                   Responsive IFrame Generator
                 </h3>
@@ -74,7 +76,7 @@ export default async function Home(props: Props) {
                   viewing across all devices.
                 </p>
               </div>
-              <div className="bg-blue-50 p-6 rounded-lg">
+              <div className="bg-blue-50 p-6 rounded-lg" role="listitem">
                 <h3 className="text-xl font-semibold text-blue-800 mb-3">
                   Easy-to-Use IFrame Generator
                 </h3>
@@ -88,8 +90,8 @@ export default async function Home(props: Props) {
           </section>
 
           {/* Features Section */}
-          <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <section className="space-y-4" aria-labelledby="features-section">
+            <h2 id="features-section" className="text-2xl font-bold text-gray-900">
               Advanced IFrame Generator Features
             </h2>
             <p className="text-gray-600 mb-6">
@@ -102,7 +104,7 @@ export default async function Home(props: Props) {
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   IFrame Generator Security Features
                 </h3>
-                <ul className="list-disc pl-6 space-y-2 text-gray-600">
+                <ul className="list-disc pl-6 space-y-2 text-gray-600" role="list" aria-label="Security features list">
                   <li>Advanced sandbox controls in our IFrame Generator</li>
                   <li>Cross-origin resource policy management</li>
                   <li>Content Security Policy (CSP) implementation</li>
@@ -114,7 +116,7 @@ export default async function Home(props: Props) {
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   IFrame Generator Customization Options
                 </h3>
-                <ul className="list-disc pl-6 space-y-2 text-gray-600">
+                <ul className="list-disc pl-6 space-y-2 text-gray-600" role="list" aria-label="Customization options list">
                   <li>Responsive width and height controls</li>
                   <li>Custom border and styling options</li>
                   <li>Advanced IFrame Generator settings</li>
@@ -126,8 +128,8 @@ export default async function Home(props: Props) {
           </section>
 
           {/* Technical Guide Section */}
-          <section className="bg-gray-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <section className="bg-gray-50 p-8 rounded-lg" aria-labelledby="tech-guide-section">
+            <h2 id="tech-guide-section" className="text-2xl font-bold text-gray-900 mb-6">
               IFrame Generator Technology Guide
             </h2>
             <div className="space-y-6">
@@ -151,7 +153,7 @@ export default async function Home(props: Props) {
                   Our IFrame Generator implements current web standards and best
                   practices:
                 </p>
-                <ul className="list-disc pl-6 space-y-2 text-gray-600">
+                <ul className="list-disc pl-6 space-y-2 text-gray-600" role="list" aria-label="Best practices list">
                   <li>Advanced IFrame Generator security features</li>
                   <li>Responsive design with our IFrame Generator</li>
                   <li>Performance optimization with lazy loading</li>
@@ -163,8 +165,8 @@ export default async function Home(props: Props) {
           </section>
 
           {/* Use Cases Section */}
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <section aria-labelledby="use-cases-section">
+            <h2 id="use-cases-section" className="text-2xl font-bold text-gray-900 mb-6">
               IFrame Generator Applications
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -195,12 +197,12 @@ export default async function Home(props: Props) {
           </section>
 
           {/* FAQ Section */}
-          <section className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <section className="space-y-6" aria-labelledby="faq-section">
+            <h2 id="faq-section" className="text-2xl font-bold text-gray-900">
               Frequently Asked Questions About IFrame Generator
             </h2>
-            <div className="space-y-4">
-              <div>
+            <div className="space-y-4" role="list">
+              <div role="listitem">
                 <h3 className="font-semibold text-gray-900">
                   What makes this IFrame Generator special?
                 </h3>
@@ -212,7 +214,7 @@ export default async function Home(props: Props) {
                   developers.
                 </p>
               </div>
-              <div>
+              <div role="listitem">
                 <h3 className="font-semibold text-gray-900">
                   How secure are the generated iframes?
                 </h3>
@@ -223,7 +225,7 @@ export default async function Home(props: Props) {
                   with security best practices built-in.
                 </p>
               </div>
-              <div>
+              <div role="listitem">
                 <h3 className="font-semibold text-gray-900">
                   Can I create responsive iframes?
                 </h3>
@@ -234,7 +236,7 @@ export default async function Home(props: Props) {
                   perfect on all devices.
                 </p>
               </div>
-              <div>
+              <div role="listitem">
                 <h3 className="font-semibold text-gray-900">
                   What browsers are supported?
                 </h3>

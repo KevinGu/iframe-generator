@@ -1,5 +1,5 @@
-import createNextIntlPlugin from "next-intl/plugin";
-import createMDX from "@next/mdx";
+const createNextIntlPlugin = require("next-intl/plugin");
+const createMDX = require("@next/mdx");
 
 const withNextIntl = createNextIntlPlugin();
 const withMDX = createMDX({
@@ -9,9 +9,12 @@ const withMDX = createMDX({
   },
 });
 
-/** @type {import('next').NextConfig} */
+/** @type {require('next').NextConfig} */
 const WEBSITE_CDN = process.env.NEXT_PUBLIC_CDN;
 const nextConfig = {
+  experimental: {
+    cssChunking: true, // default
+  },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production", // 生产环境移除 console
   },
@@ -28,4 +31,4 @@ const nextConfig = {
 };
 
 // 使用 withMDX 和 withNextIntl 包装配置
-export default withNextIntl(withMDX(nextConfig));
+module.exports = withNextIntl(withMDX(nextConfig));

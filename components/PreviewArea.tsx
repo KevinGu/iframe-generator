@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { generateIframeProps } from "@/utils/iframeHelpers";
 import { IframeError, getIframeErrorMessage } from "@/app/config/iframeTypes";
+import cn from 'classnames';
 
 type DeviceType = "desktop" | "tablet" | "mobile";
 
@@ -160,9 +161,7 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
     const actualWidth = showOutline 
       ? Math.min(configWidth, devicePresets[deviceType].width)
       : configWidth;
-    const actualHeight = showOutline
-      ? Math.min(configHeight, devicePreset.height)
-      : configHeight;
+    const actualHeight = configHeight;
     
     // 缩放后的尺寸
     const scale = getPreviewScale();
@@ -241,167 +240,231 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
+    <section className="space-y-4" aria-label="Preview section">
+      <header className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-medium">Preview</h2>
+          <h2 className="text-lg font-medium text-gray-900">Preview</h2>
           {config.allowFullscreen && (
             <Chip
               startContent={<CheckIcon size={18} />}
-              variant="bordered"
+              variant="flat"
               color="success"
-              size="sm"
+              className="text-gray-900"
             >
-              Fullscreen enabled but requires internal page support and user interaction
+              Fullscreen
             </Chip>
           )}
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-gray-500 space-x-3">
+        <nav className="flex items-center space-x-4" aria-label="Preview controls">
+          <ul className="text-sm text-gray-700 space-x-3 flex items-center" aria-label="Preview size information">
             {(() => {
               const { device, content, scaled } = getPreviewSizeInfo();
               return (
                 <>
-                  {device && <span>{device}</span>}
-                  <span>{content}</span>
-                  {scaled && <span>{scaled}</span>}
+                  <li aria-label="Device info">
+                    <span>{device}</span>
+                  </li>
+                  <li aria-label="Content size">
+                    <span>{content}</span>
+                  </li>
+                  {scaled && (
+                    <li aria-label="Scaled size">
+                      <span>{scaled}</span>
+                    </li>
+                  )}
                 </>
               );
             })()}
-          </div>
+          </ul>
 
           <Button
             isIconOnly
+            aria-label="Refresh preview"
+            onPress={refreshPreview}
             variant="light"
-            size="sm"
-            onClick={refreshPreview}
-            aria-label="Refresh Preview"
+            className="ml-2"
           >
             <RefreshCw className="w-4 h-4" />
           </Button>
 
-          <ButtonGroup variant="light" size="sm">
+          <ButtonGroup variant="flat" aria-label="Device selection">
             <Button
               isIconOnly
-              onClick={() => handleDeviceChange("desktop")}
-              className={deviceType === "desktop" ? "bg-blue-100" : ""}
-              aria-label="Desktop View"
+              aria-label="Desktop view"
+              aria-pressed={deviceType === "desktop"}
+              onPress={() => handleDeviceChange("desktop")}
+              className={deviceType === "desktop" ? "bg-blue-300" : ""}
             >
               <Monitor className="w-4 h-4" />
             </Button>
             <Button
               isIconOnly
-              onClick={() => handleDeviceChange("tablet")}
-              className={deviceType === "tablet" ? "bg-blue-100" : ""}
-              aria-label="Tablet View"
+              aria-label="Tablet view"
+              aria-pressed={deviceType === "tablet"}
+              onPress={() => handleDeviceChange("tablet")}
+              className={deviceType === "tablet" ? "bg-blue-300" : ""}
             >
               <Tablet className="w-4 h-4" />
             </Button>
             <Button
               isIconOnly
-              onClick={() => handleDeviceChange("mobile")}
-              className={deviceType === "mobile" ? "bg-blue-100" : ""}
-              aria-label="Mobile View"
+              aria-label="Mobile view"
+              aria-pressed={deviceType === "mobile"}
+              onPress={() => handleDeviceChange("mobile")}
+              className={deviceType === "mobile" ? "bg-blue-300" : ""}
             >
               <Smartphone className="w-4 h-4" />
             </Button>
           </ButtonGroup>
-        </div>
-      </div>
+        </nav>
+      </header>
 
-      <Card className="bg-gray-50">
-        <CardBody className="p-4">
-          <div className={`
-            flex justify-center items-center
-            ${deviceType === "desktop" ? "min-h-[600px]" : "min-h-fit"}
-          `}>
-            <div
-              className={`
-                transition-all duration-300 relative
-                ${isChangingDevice ? "opacity-50 scale-95" : "opacity-100 scale-100"}
-                ${currentDevice.className}
-              `}
-              style={getPreviewContainerStyle()}
-            >
-              {config.url ? (
-                <div 
-                  className="relative bg-white h-full"
-                  style={getContentContainerStyle()}
-                >
-                  {/* 加载状态显示 */}
-                  {loading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10">
-                      <div className="text-center space-y-3">
-                        <Spinner size="lg" color="primary" />
-                        <p className="text-sm text-gray-600">Loading...</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 错误状态显示 */}
-                  {error && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-white z-20 p-6">
-                      <div className="text-center max-w-md space-y-4">
-                        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
-                          <svg
-                            className="w-6 h-6 text-red-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                            />
-                          </svg>
-                        </div>
-                        <h3 className="text-lg font-semibold text-red-600">
-                          {getIframeErrorMessage(error).title}
-                        </h3>
-                        <p className="text-gray-700">
-                          {getIframeErrorMessage(error).message}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {getIframeErrorMessage(error).suggestion}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {!error && (
-                    <iframe
-                      ref={iframeRef}
-                      {...iframeProps}
-                      onLoad={handleLoad}
-                      onError={() => handleIframeError(new Error("iframe加载失败"))}
-                      style={{
-                        ...generateStyles(),
-                        width: '100%',
-                        height: '100%',
-                        display: error ? 'none' : 'block',
-                      }}
-                    />
-                  )}
-                </div>
-              ) : (
-                <div 
-                  className={`
-                    flex items-center justify-center bg-gray-100 rounded-lg border border-gray-200
-                    ${deviceType === "desktop" 
-                      ? `h-[${config.height}${config.heightUnit}]` 
-                      : "h-[400px]"}
-                  `}
-                  aria-label="Empty preview area"
-                />
-              )}
+      <main className="relative bg-gray-50" role="main">
+        {loading && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="text-center space-y-3">
+              <Spinner size="lg" color="primary" />
+              <p className="text-sm text-gray-700">Loading...</p>
             </div>
           </div>
-        </CardBody>
-      </Card>
-    </div>
+        )}
+
+        {error && (
+          <div 
+            className="absolute inset-0 flex flex-col items-center justify-center bg-white z-20 p-6"
+            role="alert"
+            aria-live="assertive"
+          >
+            <div className="text-center max-w-md space-y-4">
+              <div className="flex justify-center" aria-hidden="true">
+                <svg
+                  className="w-6 h-6 text-red-700"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-red-700">
+                {getIframeErrorMessage(error).title}
+              </h3>
+              <p className="text-gray-900">
+                {getIframeErrorMessage(error).message}
+              </p>
+              <p className="text-sm text-gray-700">
+                {getIframeErrorMessage(error).suggestion}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div 
+          className={`
+            flex justify-center items-center
+            ${deviceType === "desktop" ? "min-h-[600px]" : "min-h-fit"}
+          `}
+          role="region"
+          aria-label="Preview container"
+        >
+          <div 
+            className={`
+              transition-all duration-300 relative
+              ${isChangingDevice ? "opacity-50 scale-95" : "opacity-100 scale-100"}
+              ${currentDevice.className}
+            `} 
+            style={getPreviewContainerStyle()}
+            role="presentation"
+          >
+            {config.url ? (
+              <article 
+                className="relative bg-white h-full"
+                style={getContentContainerStyle()}
+              >
+                {/* 加载状态显示 */}
+                {loading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10">
+                    <div className="text-center space-y-3">
+                      <Spinner size="lg" color="primary" />
+                      <p className="text-sm text-gray-700">Loading...</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 错误状态显示 */}
+                {error && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-white z-20 p-6">
+                    <div className="text-center max-w-md space-y-4">
+                      <div className="flex justify-center">
+                        <svg
+                          className="w-6 h-6 text-red-700"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-red-700">
+                        {getIframeErrorMessage(error).title}
+                      </h3>
+                      <p className="text-gray-900">
+                        {getIframeErrorMessage(error).message}
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        {getIframeErrorMessage(error).suggestion}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {!error && (
+                  <iframe
+                    ref={iframeRef}
+                    {...iframeProps}
+                    onLoad={handleLoad}
+                    onError={() => handleIframeError(new Error("iframe加载失败"))}
+                    style={{
+                      ...generateStyles(),
+                      width: '100%',
+                      height: '100%',
+                      display: error ? 'none' : 'block',
+                    }}
+                    title="Preview content"
+                  />
+                )}
+              </article>
+            ) : (
+              <div 
+                className={cn(
+                  "flex items-center justify-center bg-gray-50",
+                  deviceType === "desktop" 
+                    ? `h-[${config.height}${config.heightUnit}]` 
+                    : "h-[400px]"
+                )}
+                role="region"
+                aria-label="Empty preview area"
+              />
+            )}
+          </div>
+        </div>
+      </main>
+    </section>
   );
 };
 

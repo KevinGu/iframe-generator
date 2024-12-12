@@ -42,11 +42,13 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
     const tooltips: Record<string, string> = {
       "allow-scripts": "Allows scripts to run in the iframe",
       "allow-same-origin": "Allows the iframe to interact with the same origin",
-      "allow-top-navigation": "Allows the iframe to navigate the top-level browsing context",
+      "allow-top-navigation":
+        "Allows the iframe to navigate the top-level browsing context",
       "allow-forms": "Allows the iframe to submit forms",
       "allow-popups": "Allows the iframe to open popups",
       "allow-pointer-lock": "Allows the iframe to lock the pointer",
-      "allow-orientation-lock": "Allows the iframe to lock the screen orientation",
+      "allow-orientation-lock":
+        "Allows the iframe to lock the screen orientation",
       "allow-presentation": "Allows the iframe to present the document",
       "allow-fullscreen": "Allows the iframe to enter fullscreen mode",
     };
@@ -56,16 +58,24 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
   // 添加 referrerPolicy 的 tooltip 辅助函数
   const getReferrerPolicyTooltip = (policy: string): string => {
     const tooltips: Record<string, string> = {
-      'no-referrer': 'Never send referrer information. Maximum privacy but may break some functionality.',
-      'no-referrer-when-downgrade': 'Send full referrer info only when protocol security level stays same or improves (e.g., HTTPS→HTTPS).',
-      'origin': 'Only send the origin of the document as referrer. Example: "https://example.com/"',
-      'origin-when-cross-origin': 'Send full referrer to same origin, only send origin part for cross-origin requests.',
-      'same-origin': 'Send referrer info only for same-origin requests, omit it for cross-origin requests.',
-      'strict-origin': 'Send origin as referrer only when protocol security level stays same or improves.',
-      'strict-origin-when-cross-origin': 'Default. Send full referrer to same origin, origin-only to cross-origin, nothing to less secure.',
-      'unsafe-url': 'Send full referrer info always. Not recommended as it may leak private data over insecure connections.'
+      "no-referrer":
+        "Never send referrer information. Maximum privacy but may break some functionality.",
+      "no-referrer-when-downgrade":
+        "Send full referrer info only when protocol security level stays same or improves (e.g., HTTPS→HTTPS).",
+      origin:
+        'Only send the origin of the document as referrer. Example: "https://example.com/"',
+      "origin-when-cross-origin":
+        "Send full referrer to same origin, only send origin part for cross-origin requests.",
+      "same-origin":
+        "Send referrer info only for same-origin requests, omit it for cross-origin requests.",
+      "strict-origin":
+        "Send origin as referrer only when protocol security level stays same or improves.",
+      "strict-origin-when-cross-origin":
+        "Default. Send full referrer to same origin, origin-only to cross-origin, nothing to less secure.",
+      "unsafe-url":
+        "Send full referrer info always. Not recommended as it may leak private data over insecure connections.",
     };
-    return tooltips[policy] || 'No description available';
+    return tooltips[policy] || "No description available";
   };
 
   return (
@@ -78,7 +88,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
           title={
             <div className="flex items-center space-x-2">
               <Settings2Icon className="w-4 h-4" />
-              <span>Basic</span>
+              <span className="">Basic</span>
             </div>
           }
         >
@@ -97,6 +107,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                 mainWrapper: "h-full",
                 inputWrapper: "h-[56px]",
               }}
+              aria-label="Iframe title"
             />
 
             {/* 宽度和高度输入组 */}
@@ -119,8 +130,9 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     value={config.width}
                     onChange={(e) => updateConfig({ width: e.target.value })}
                     startContent={
-                      <MoveHorizontalIcon className="w-4 h-4 text-gray-400" />
+                      <MoveHorizontalIcon className="w-4 h-4 text-gray-600" aria-hidden="true" />
                     }
+                    aria-label="Iframe width"
                   />
                 </div>
                 <Select
@@ -170,25 +182,27 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                   value={config.height.replace(/[^0-9]/g, "")}
                   onChange={(e) => updateConfig({ height: e.target.value })}
                   startContent={
-                    <MoveVerticalIcon className="w-4 h-4 text-gray-400" />
+                    <MoveVerticalIcon className="w-4 h-4 text-gray-600" aria-hidden="true" />
                   }
                   endContent={
-                    <div className="flex items-center px-3 text-default-400">
+                    <div className="flex items-center px-3 text-gray-700" aria-hidden="true">
                       <span className="text-small">px</span>
                     </div>
                   }
+                  aria-label="Iframe height"
                 />
               </div>
             </div>
 
             {/* 快速设置开关组 */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg" role="group" aria-label="Quick settings">
               <div className="flex items-center gap-1">
                 <Switch
                   isSelected={config.scrolling ?? true}
                   onValueChange={(checked) =>
                     updateConfig((prev) => ({ ...prev, scrolling: checked }))
                   }
+                  aria-label="Allow scrolling"
                 >
                   Allow Scrolling
                 </Switch>
@@ -196,7 +210,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                   content="Allow scrolling within iframe content"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                 </Tooltip>
               </div>
 
@@ -212,6 +226,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                         : (prev.allow || []).filter((x) => x !== "fullscreen"),
                     }))
                   }
+                  aria-label="Allow fullscreen mode"
                 >
                   Allow Fullscreen
                 </Switch>
@@ -219,7 +234,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                   content="Allow iframe content to enter fullscreen mode, which requires internal page support"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                 </Tooltip>
               </div>
 
@@ -232,6 +247,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                       loading: checked ? "lazy" : "eager",
                     }))
                   }
+                  aria-label="Enable lazy loading"
                 >
                   Lazy Loading
                 </Switch>
@@ -239,7 +255,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                   content="Only load content when iframe enters the viewport, which can improve page performance"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                 </Tooltip>
               </div>
             </div>
@@ -252,7 +268,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
           title={
             <div className="flex items-center space-x-2">
               <PaintbrushIcon className="w-4 h-4" />
-              <span>Style</span>
+              <span className="">Style</span>
             </div>
           }
         >
@@ -279,10 +295,11 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     inputWrapper: "h-[56px]",
                   }}
                   endContent={
-                    <div className="flex items-center px-3 text-default-400">
+                    <div className="flex items-center px-3 text-gray-700">
                       <span className="text-small">px</span>
                     </div>
                   }
+                  aria-label="Border size"
                 />
                 <Select
                   label="Border Style"
@@ -306,6 +323,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                         | "double",
                     }))
                   }
+                  aria-label="Select border style"
                 >
                   <SelectItem
                     key="none"
@@ -364,7 +382,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                   </SelectItem>
                 </Select>
                 <div className="w-full">
-                  <label className="block text-sm mb-2 font-medium text-default-700">
+                  <label className="block text-sm mb-2 font-medium text-gray-900">
                     Border Color
                   </label>
                   <div className="h-[56px] flex items-center">
@@ -379,6 +397,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                             borderColor: e.target.value,
                           }))
                         }
+                        aria-label="Select border color"
                       />
                       <div
                         className="w-12 h-12 rounded-full border-2 border-gray-200"
@@ -410,6 +429,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     borderRadiusName: value,
                   }));
                 }}
+                aria-label="Select border radius"
               >
                 <SelectItem key="none">None</SelectItem>
                 <SelectItem key="sm">Small</SelectItem>
@@ -438,14 +458,15 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                   }))
                 }
                 endContent={
-                  <div className="flex items-center px-3 text-default-400">
+                  <div className="flex items-center px-3 text-gray-700">
                     <span className="text-small">px</span>
                   </div>
                 }
+                aria-label="Padding"
               />
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-default-700">
+                <label className="block text-sm font-medium mb-2 text-gray-900">
                   Background Color
                 </label>
                 <div className="h-[56px] flex items-center">
@@ -460,6 +481,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                           backgroundColor: e.target.value,
                         }))
                       }
+                      aria-label="Select background color"
                     />
                     <div
                       className="w-12 h-12 rounded-full border-2 border-gray-200"
@@ -478,14 +500,14 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
           title={
             <div className="flex items-center space-x-2">
               <ShieldIcon className="w-4 h-4" />
-              <span>Security</span>
+              <span className="">Security</span>
             </div>
           }
         >
           <div className="py-4 space-y-6">
             {/* Sandbox 设置组 */}
             <div className="space-y-3">
-              <p className="text-base font-medium text-default-700">
+              <p className="text-base font-medium text-gray-900">
                 Sandbox Permissions
               </p>
               <div className="p-5 bg-gray-50 rounded-lg">
@@ -505,11 +527,12 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                         classNames={{
                           label: "text-sm",
                         }}
+                        aria-label={option.label}
                       >
                         {option.label}
                       </Checkbox>
                       <Tooltip content={getSandboxTooltip(option.value)}>
-                        <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                        <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                       </Tooltip>
                     </div>
                   ))}
@@ -520,11 +543,11 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
             {/* Referrer Policy 设置组 */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <p className="text-base font-medium text-default-700">
+                <p className="text-base font-medium text-gray-900">
                   Referrer Policy
                 </p>
                 <Tooltip content="Controls how much referrer information should be included when navigating away from the iframe. This affects privacy and security.">
-                  <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                 </Tooltip>
               </div>
               <div className="p-5 bg-gray-50 rounded-lg">
@@ -540,17 +563,19 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                   classNames={{
                     wrapper: "gap-6",
                   }}
+                  aria-label="Select referrer policy"
                 >
                   {referrerPolicyOptions.map((policy) => (
                     <div key={policy} className="flex items-center gap-1">
                       <Radio
                         value={policy}
-                        classNames={{ label: "text-sm" }}
+                        classNames={{ label: "text-sm text-gray-900" }}
+                        aria-label={policy}
                       >
                         {policy}
                       </Radio>
                       <Tooltip content={getReferrerPolicyTooltip(policy)}>
-                        <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                        <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                       </Tooltip>
                     </div>
                   ))}
@@ -566,7 +591,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
           title={
             <div className="flex items-center space-x-2">
               <WrenchIcon className="w-4 h-4" />
-              <span>Advanced</span>
+              <span className="">Advanced</span>
             </div>
           }
         >
@@ -575,9 +600,11 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div className="flex items-center gap-1 mb-2">
-                  <label className="text-sm font-medium text-default-700">Name</label>
+                  <label className="text-sm font-medium text-gray-900">
+                    Name
+                  </label>
                   <Tooltip content="The name attribute can be used as the target for form submissions and links. Example: If name='myFrame', you can use <a target='myFrame'> to open links in this iframe.">
-                    <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                    <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                   </Tooltip>
                 </div>
                 <Input
@@ -591,14 +618,17 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     mainWrapper: "h-full",
                     inputWrapper: "h-[56px]",
                   }}
+                  aria-label="Iframe name"
                 />
               </div>
 
               <div>
                 <div className="flex items-center gap-1 mb-2">
-                  <label className="text-sm font-medium text-default-700">ARIA Label</label>
+                  <label className="text-sm font-medium text-gray-900">
+                    ARIA Label
+                  </label>
                   <Tooltip content="Provides an accessible name for screen readers. Should describe the iframe's purpose. Example: 'Product demonstration video' or 'Google Maps location view'">
-                    <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                    <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                   </Tooltip>
                 </div>
                 <Input
@@ -612,6 +642,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     mainWrapper: "h-full",
                     inputWrapper: "h-[56px]",
                   }}
+                  aria-label="Accessible label"
                 />
               </div>
             </div>
@@ -619,9 +650,11 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
             {/* 性能设置组 */}
             <div className="space-y-3">
               <div className="flex items-center gap-1">
-                <p className="text-base font-medium text-default-700">Load Priority</p>
+                <p className="text-base font-medium text-gray-900">
+                  Load Priority
+                </p>
                 <Tooltip content="Controls how the browser prioritizes the loading of this iframe relative to other resources on the page">
-                  <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                 </Tooltip>
               </div>
               <div className="p-5 bg-gray-50 rounded-lg">
@@ -637,31 +670,44 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                   classNames={{
                     wrapper: "gap-6",
                   }}
+                  aria-label="Select load priority"
                 >
                   <div className="flex items-center gap-1">
-                    <Radio value="high" classNames={{ label: "text-sm" }}>
+                    <Radio
+                      value="high"
+                      classNames={{ label: "text-sm text-gray-900" }}
+                      aria-label="High priority"
+                    >
                       High Priority
                     </Radio>
                     <Tooltip content="Load this iframe with high priority. Use for critical content that should load as soon as possible. Example: A main product image or primary content video">
-                      <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                      <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                     </Tooltip>
                   </div>
-                  
+
                   <div className="flex items-center gap-1">
-                    <Radio value="low" classNames={{ label: "text-sm" }}>
+                    <Radio
+                      value="low"
+                      classNames={{ label: "text-sm text-gray-900" }}
+                      aria-label="Low priority"
+                    >
                       Low Priority
                     </Radio>
                     <Tooltip content="Load this iframe with low priority. Good for non-essential content that can load later. Example: Advertisement frames or supplementary content">
-                      <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                      <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                     </Tooltip>
                   </div>
-                  
+
                   <div className="flex items-center gap-1">
-                    <Radio value="auto" classNames={{ label: "text-sm" }}>
+                    <Radio
+                      value="auto"
+                      classNames={{ label: "text-sm text-gray-900" }}
+                      aria-label="Auto priority"
+                    >
                       Auto
                     </Radio>
                     <Tooltip content="Let the browser determine the loading priority automatically based on the iframe's viewport position and other factors">
-                      <HelpCircleIcon className="w-4 h-4 text-gray-400 cursor-help" />
+                      <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                     </Tooltip>
                   </div>
                 </RadioGroup>
