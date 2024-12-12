@@ -12,6 +12,7 @@ import { ReactNode } from "react";
 import { WEBSITE_NAME } from "../config";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export type LocaleProps = {
   children: ReactNode;
@@ -83,6 +84,7 @@ async function RootLayout(props: LocaleProps) {
             </NextIntlClientProvider>
           </Providers>
         </ProgressBarProviders>
+        <SpeedInsights />
       </body>
     </html>
   );

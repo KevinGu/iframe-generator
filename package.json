@@ -17,6 +17,7 @@
     "@react-aria/i18n": "^3.12.4",
     "@types/mdx": "^2.0.13",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@vercel/speed-insights": "^1.1.0",
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
     "html-react-parser": "^5.2.0",
@@ -33,7 +34,6 @@
     "react-lite-youtube-embed": "^2.4.0",
     "react-syntax-highlighter": "^15.6.1",
     "react-timezone-select": "^3.2.8",
-  
     "sharp": "^0.33.5",
     "tailwind-merge": "^2.5.5",
     "usehooks-ts": "^3.1.0"
