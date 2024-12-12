@@ -81,7 +81,12 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
   return (
     <div className="space-y-4">
       {/* Tabs Component */}
-      <Tabs aria-label="Settings" radius="full" color="primary">
+      <Tabs 
+        aria-label="Settings" 
+        radius="full" 
+        color="primary"
+        defaultSelectedKey="basic"
+      >
         {/* 基础设置 Tab */}
         <Tab
           key="basic"
