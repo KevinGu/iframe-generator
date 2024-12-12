@@ -3,15 +3,21 @@
 import React, { useEffect, useState, useCallback, FocusEvent } from "react";
 import { IFrameConfig } from "../config/iframeTypes";
 import { useIframeStatus } from "../../hooks/useIframeStatus";
-import { 
-  DynamicSettingsTabs,
-  DynamicPreviewArea,
-  DynamicCodePreview 
-} from "../../utils/dynamic-components";
-import { isValidUrl, radiusPresets, normalizeUrl } from "../../utils/iframeHelpers";
+
+import {
+  isValidUrl,
+  radiusPresets,
+  normalizeUrl,
+} from "../../utils/iframeHelpers";
 import { Input, Select, SelectItem } from "@nextui-org/react";
-import { Link2, LinkIcon } from "lucide-react";
+import { Link2 } from "lucide-react";
 import { generateIframeProps } from "@/utils/iframeHelpers";
+import {
+  DynamicCodePreview,
+  DynamicPreviewArea,
+  DynamicSettingsTabs,
+  DynamicRecentlyUsed,
+} from "@/utils/dynamic-components";
 
 // 默认配置更新
 const defaultConfig: IFrameConfig = {
@@ -118,13 +124,13 @@ const IFrameGenerator: React.FC = () => {
         if (newConfig.url && isValidUrl(newConfig.url)) {
           try {
             const normalizedUrl = normalizeUrl(newConfig.url);
-            
+
             // 创建新的配置对象，使用归一化后的 URL
             const configToSave = {
               ...newConfig,
-              url: normalizedUrl // 使用归一化后的 URL
+              url: normalizedUrl, // 使用归一化后的 URL
             };
-            
+
             // 更新配置存储
             const savedConfigs = JSON.parse(
               localStorage.getItem("iframeConfigs") || "{}"
@@ -152,7 +158,7 @@ const IFrameGenerator: React.FC = () => {
               JSON.stringify(newHistory)
             );
             setUrlHistory(newHistory);
-            
+
             // 更新当前配置为归一化后的版本
             return configToSave;
           } catch (error) {
@@ -171,15 +177,18 @@ const IFrameGenerator: React.FC = () => {
    */
   const handleUrlInputComplete = (url: string) => {
     // 确保有协议前缀并移除尾部斜杠
-    const fullUrl = (url.match(/^https?:\/\//) ? url : protocol + url).replace(/\/+$/, '');
-    
-    if (url && url.includes('.')) {
+    const fullUrl = (url.match(/^https?:\/\//) ? url : protocol + url).replace(
+      /\/+$/,
+      ""
+    );
+
+    if (url && url.includes(".")) {
       try {
         const normalizedUrl = normalizeUrl(fullUrl);
         const savedConfigs = JSON.parse(
-          localStorage.getItem('iframeConfigs') || '{}'
+          localStorage.getItem("iframeConfigs") || "{}"
         );
-        
+
         if (savedConfigs[normalizedUrl]) {
           updateConfig(savedConfigs[normalizedUrl]);
         } else {
@@ -187,10 +196,10 @@ const IFrameGenerator: React.FC = () => {
           updateConfig(defaultConfig);
         }
       } catch (error) {
-        console.error('Failed to load saved configs:', error);
-        setErrors(prev => ({
+        console.error("Failed to load saved configs:", error);
+        setErrors((prev) => ({
           ...prev,
-          url: true
+          url: true,
         }));
       }
     }
@@ -201,22 +210,22 @@ const IFrameGenerator: React.FC = () => {
    */
   const handleUrlChange = (url: string) => {
     // 只移除协议前缀，保留其他内容
-    let cleanUrl = url.replace(/^(https?:\/\/)/, '');
-    
+    let cleanUrl = url.replace(/^(https?:\/\/)/, "");
+
     // 如果用户粘贴了完整URL，自动选择对应协议
-    if (url.startsWith('https://')) {
-      setProtocol('https://');
-    } else if (url.startsWith('http://')) {
-      setProtocol('http://');
+    if (url.startsWith("https://")) {
+      setProtocol("https://");
+    } else if (url.startsWith("http://")) {
+      setProtocol("http://");
     }
-    
-    setConfig(prev => ({ ...prev, url: cleanUrl }));
-    
+
+    setConfig((prev) => ({ ...prev, url: cleanUrl }));
+
     // 验证时加上协议前缀
     const fullUrl = protocol + cleanUrl;
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      url: !isValidUrl(fullUrl)
+      url: !isValidUrl(fullUrl),
     }));
   };
 
@@ -247,7 +256,7 @@ const IFrameGenerator: React.FC = () => {
     const styles = {
       backgroundColor: currentConfig.backgroundColor,
       padding: currentConfig.padding,
-      border: currentConfig.border 
+      border: currentConfig.border
         ? `${currentConfig.borderSize}px ${currentConfig.borderStyle} ${currentConfig.borderColor}`
         : "none",
       borderRadius: radiusPresets[currentConfig.borderRadiusName],
@@ -259,10 +268,10 @@ const IFrameGenerator: React.FC = () => {
     const styleString = Object.entries(styles)
       .map(([key, value]) => {
         // 转换驼峰命名为连字符命名
-        const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+        const cssKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
         return `${cssKey}: ${value}`;
       })
-      .join('; ');
+      .join("; ");
 
     const { props } = generateIframeProps({ config: currentConfig });
 
@@ -333,7 +342,7 @@ const IFrameGenerator: React.FC = () => {
               Website URL
             </h2>
             <div className="flex-1 w-full flex items-center gap-2">
-              <Select 
+              <Select
                 value={protocol}
                 onChange={(e) => setProtocol(e.target.value)}
                 defaultSelectedKeys={["https://"]}
@@ -342,33 +351,34 @@ const IFrameGenerator: React.FC = () => {
                 variant="bordered"
                 radius="sm"
                 classNames={{
-                  trigger: "h-[50px] bg-gray-50/50 border-gray-200 hover:bg-gray-100/70",
+                  trigger:
+                    "h-[50px] bg-gray-50/50 border-gray-200 hover:bg-gray-100/70",
                   value: "text-gray-600 font-mono text-sm",
                 }}
               >
-                <SelectItem 
-                  key="https://" 
+                <SelectItem
+                  key="https://"
                   value="https://"
                   className="font-mono text-sm"
                 >
                   https://
                 </SelectItem>
-                <SelectItem 
-                  key="http://" 
+                <SelectItem
+                  key="http://"
                   value="http://"
                   className="font-mono text-sm"
                 >
                   http://
                 </SelectItem>
               </Select>
-              
+
               <Input
                 placeholder="Enter website URL to embed (protocol not needed)"
                 radius="none"
                 size="lg"
                 variant="underlined"
                 labelPlacement="outside-left"
-                value={config.url.replace(/^(https?:\/\/)/, '')} // 显示时去掉协议部分
+                value={config.url.replace(/^(https?:\/\/)/, "")} // 显示时去掉协议部分
                 onChange={(e) => handleUrlChange(e.target.value)}
                 isInvalid={errors.url}
                 errorMessage={errors.url && "Please enter a valid website URL"}
@@ -379,7 +389,8 @@ const IFrameGenerator: React.FC = () => {
                 classNames={{
                   mainWrapper: "h-[50px] flex-1",
                   input: "text-gray-700",
-                  inputWrapper: "h-[50px] border-b-2 border-gray-200 hover:border-gray-300 focus-within:border-primary",
+                  inputWrapper:
+                    "h-[50px] border-b-2 border-gray-200 hover:border-gray-300 focus-within:border-primary",
                 }}
                 onBlur={(e: FocusEvent<Element>) => {
                   const target = e.target as HTMLInputElement;
@@ -396,51 +407,10 @@ const IFrameGenerator: React.FC = () => {
           </div>
 
           {/* 历史记录列表 */}
-          {urlHistory.length > 0 && (
-            <div className="mt-4 space-y-2">
-              <p className="text-sm text-gray-500">Recently used:</p>
-              <div className="flex flex-wrap gap-2">
-                {urlHistory.map((item, index) => (
-                  <div
-                    key={index}
-                    className="group inline-flex items-center px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 transition-colors"
-                  >
-                    <button
-                      onClick={() => setConfig(item.config)}
-                      className="inline-flex items-center"
-                    >
-                      <LinkIcon className="w-3 h-3 mr-2" />
-                      {/* 显示原始 URL，但使用归一化的 URL 作为键 */}
-                      {item.config.url.length > 30
-                        ? item.config.url.substring(0, 30) + "..."
-                        : item.config.url}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeFromHistory(item.url);
-                      }}
-                      className="ml-2 p-0.5 rounded-full hover:bg-gray-300 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <svg
-                        className="w-3 h-3 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <DynamicRecentlyUsed
+              urlHistory={urlHistory}
+              setConfig={setConfig}
+            />
         </div>
       </div>
 
@@ -457,7 +427,7 @@ const IFrameGenerator: React.FC = () => {
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <DynamicCodePreview generateHTML={generateHTML} />
       </div>
-      
+
       {/* 预览区域 */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <DynamicPreviewArea
