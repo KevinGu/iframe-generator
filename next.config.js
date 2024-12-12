@@ -14,7 +14,7 @@ const WEBSITE_CDN = process.env.NEXT_PUBLIC_CDN;
 const nextConfig = {
   experimental: {
     cssChunking: true, // default
-    optimizePackageImports: ["icon-library"],
+    optimizePackageImports: ["lucide-react"],
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production", // 生产环境移除 console
