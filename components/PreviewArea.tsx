@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardBody, Button, ButtonGroup, Chip, Spinner } from "@nextui-org/react";
+import { Button, ButtonGroup, Chip, Spinner } from "@nextui-org/react";
 import { IFrameConfig } from "../app/config/iframeTypes";
 import {
   Monitor,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { generateIframeProps } from "@/utils/iframeHelpers";
 import { IframeError, getIframeErrorMessage } from "@/app/config/iframeTypes";
-import cn from 'classnames';
+import cn from "classnames";
 
 type DeviceType = "desktop" | "tablet" | "mobile";
 
@@ -28,21 +28,21 @@ const devicePresets: Record<DeviceType, DevicePreset> = {
     height: 1080,
     scale: 1,
     className: "",
-    label: "Desktop"
+    label: "Desktop",
   },
   tablet: {
     width: 768,
     height: 1024,
     scale: 1,
     className: "rounded-lg",
-    label: "Tablet"
+    label: "Tablet",
   },
   mobile: {
     width: 375,
     height: 667,
     scale: 1,
     className: "rounded-xl",
-    label: "Mobile"
+    label: "Mobile",
   },
 };
 
@@ -74,11 +74,11 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
   useEffect(() => {
     // 在客户端初始化时设置视口宽度
     setViewportWidth(window.innerWidth);
-    
+
     const handleResize = () => {
       setViewportWidth(window.innerWidth);
     };
-    
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -111,15 +111,16 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
     config: {
       ...config,
       // 确保 URL 包含协议
-      url: config.url && !config.url.startsWith('http') 
-        ? `https://${config.url}`
-        : config.url
+      url:
+        config.url && !config.url.startsWith("http")
+          ? `https://${config.url}`
+          : config.url,
     },
     deviceType,
     devicePresets: {
       desktop: { width: `${devicePresets.desktop.width}px` },
       tablet: { width: `${devicePresets.tablet.width}px` },
-      mobile: { width: `${devicePresets.mobile.width}px` }
+      mobile: { width: `${devicePresets.mobile.width}px` },
     },
     customStyles: generateStyles(),
   });
@@ -128,7 +129,7 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
   const getPreviewDimensions = () => {
     return {
       width: `${config.width}${config.widthUnit}`,
-      height: `${config.height}${config.heightUnit}`
+      height: `${config.height}${config.heightUnit}`,
     };
   };
 
@@ -136,8 +137,10 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
   const shouldShowDeviceOutline = () => {
     const configWidth = parseInt(config.width);
     const configHeight = parseInt(config.height);
-    return configWidth <= devicePresets[deviceType].width || 
-           configHeight <= devicePresets[deviceType].height;
+    return (
+      configWidth <= devicePresets[deviceType].width ||
+      configHeight <= devicePresets[deviceType].height
+    );
   };
 
   // 获取预览尺寸信息
@@ -146,40 +149,41 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
     const configHeight = parseInt(config.height);
     const devicePreset = devicePresets[deviceType];
     const showOutline = shouldShowDeviceOutline();
-    
+
     // 始终显示设备信息，不再对桌面设备特殊处理
     const deviceInfo = `${devicePreset.label} (${devicePreset.width}×${devicePreset.height}px)`;
-    
+
     // 添加单位显示逻辑
     const getContentSize = () => {
       const widthWithUnit = `${configWidth}${config.widthUnit}`;
       const heightWithUnit = `${configHeight}px`; // 高度始终使用px
       return `${widthWithUnit}×${heightWithUnit}`;
     };
-    
+
     // 实际渲染尺寸
-    const actualWidth = showOutline 
+    const actualWidth = showOutline
       ? Math.min(configWidth, devicePresets[deviceType].width)
       : configWidth;
     const actualHeight = configHeight;
-    
+
     // 缩放后的尺寸
     const scale = getPreviewScale();
     const getScaledSize = () => {
       const scaledWidth = Math.round(actualWidth * scale);
       const scaledHeight = Math.round(actualHeight * scale);
-      
-      const scaledWidthWithUnit = config.widthUnit === '%' 
-        ? `${Math.round(configWidth * scale)}%`
-        : `${scaledWidth}px`;
-      
+
+      const scaledWidthWithUnit =
+        config.widthUnit === "%"
+          ? `${Math.round(configWidth * scale)}%`
+          : `${scaledWidth}px`;
+
       return `${scaledWidthWithUnit}×${scaledHeight}px`;
     };
-    
+
     return {
       device: deviceInfo, // 始终返回设备信息
       content: `Content: ${getContentSize()}`,
-      scaled: scale !== 1 ? `Display: ${getScaledSize()}` : null
+      scaled: scale !== 1 ? `Display: ${getScaledSize()}` : null,
     };
   };
 
@@ -187,20 +191,25 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
   const getPreviewContainerStyle = (): React.CSSProperties => {
     const showOutline = shouldShowDeviceOutline();
     const devicePreset = devicePresets[deviceType];
-    
+
     return {
       transform: `scale(${getPreviewScale()})`,
-      width: showOutline ? `${devicePreset.width}px` : `${config.width}${config.widthUnit}`,
-      height: showOutline ? `${devicePreset.height}px` : `${config.height}${config.heightUnit}`,
-      transformOrigin: 'center top',
-      overflow: 'hidden',
+      width: showOutline
+        ? `${devicePreset.width}px`
+        : `${config.width}${config.widthUnit}`,
+      height: showOutline
+        ? `${devicePreset.height}px`
+        : `${config.height}${config.heightUnit}`,
+      transformOrigin: "center top",
+      overflow: "hidden",
       ...(showOutline && {
-        backgroundColor: 'white',
-        border: '12px solid #e2e8f0',
-        borderRadius: deviceType === 'mobile' ? '32px' : '16px',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        position: 'relative',
-      })
+        backgroundColor: "white",
+        border: "12px solid #e2e8f0",
+        borderRadius: deviceType === "mobile" ? "32px" : "16px",
+        boxShadow:
+          "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        position: "relative",
+      }),
     };
   };
 
@@ -208,9 +217,9 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
   const getContentContainerStyle = () => {
     const showOutline = shouldShowDeviceOutline();
     return {
-      width: showOutline ? `${config.width}${config.widthUnit}` : '100%',
-      height: '100%',
-      margin: '0 auto',
+      width: showOutline ? `${config.width}${config.widthUnit}` : "100%",
+      height: "100%",
+      margin: "0 auto",
     };
   };
 
@@ -219,23 +228,23 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
     const showOutline = shouldShowDeviceOutline();
     const configWidth = parseInt(config.width);
     const configHeight = parseInt(config.height);
-    
+
     // 实际宽度
-    const actualWidth = showOutline 
-      ? Math.min(configWidth, devicePresets[deviceType].width) 
+    const actualWidth = showOutline
+      ? Math.min(configWidth, devicePresets[deviceType].width)
       : configWidth;
-    
+
     // 实际高度
     const actualHeight = configHeight;
-    
+
     // 缩放后的尺寸
     const scale = getPreviewScale();
     const scaledWidth = Math.round(actualWidth * scale);
     const scaledHeight = Math.round(actualHeight * scale);
-    
+
     return {
       actual: `${actualWidth}×${actualHeight}`,
-      scaled: scale !== 1 ? ` (Scaled: ${scaledWidth}×${scaledHeight})` : ''
+      scaled: scale !== 1 ? ` (Scaled: ${scaledWidth}×${scaledHeight})` : "",
     };
   };
 
@@ -256,8 +265,14 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
           )}
         </div>
 
-        <nav className="flex items-center space-x-4" aria-label="Preview controls">
-          <ul className="text-sm text-gray-700 space-x-3 flex items-center" aria-label="Preview size information">
+        <nav
+          className="flex items-center space-x-4"
+          aria-label="Preview controls"
+        >
+          <ul
+            className="text-sm text-gray-700 space-x-3 flex items-center"
+            aria-label="Preview size information"
+          >
             {(() => {
               const { device, content, scaled } = getPreviewSizeInfo();
               return (
@@ -322,7 +337,7 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
 
       <main className="relative bg-gray-50" role="main">
         {loading && (
-          <div 
+          <div
             className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10"
             role="status"
             aria-live="polite"
@@ -335,7 +350,7 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
         )}
 
         {error && (
-          <div 
+          <div
             className="absolute inset-0 flex flex-col items-center justify-center bg-white z-20 p-6"
             role="alert"
             aria-live="assertive"
@@ -369,7 +384,7 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
           </div>
         )}
 
-        <div 
+        <div
           className={`
             flex justify-center items-center
             ${deviceType === "desktop" ? "min-h-[600px]" : "min-h-fit"}
@@ -377,17 +392,17 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
           role="region"
           aria-label="Preview container"
         >
-          <div 
+          <div
             className={`
               transition-all duration-300 relative
               ${isChangingDevice ? "opacity-50 scale-95" : "opacity-100 scale-100"}
               ${currentDevice.className}
-            `} 
+            `}
             style={getPreviewContainerStyle()}
             role="presentation"
           >
             {config.url ? (
-              <article 
+              <article
                 className="relative bg-white h-full"
                 style={getContentContainerStyle()}
               >
@@ -438,23 +453,25 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
                     ref={iframeRef}
                     {...iframeProps}
                     onLoad={handleLoad}
-                    onError={() => handleIframeError(new Error("iframe加载失败"))}
+                    onError={() =>
+                      handleIframeError(new Error("iframe加载失败"))
+                    }
                     style={{
                       ...generateStyles(),
-                      width: '100%',
-                      height: '100%',
-                      display: error ? 'none' : 'block',
+                      width: "100%",
+                      height: "100%",
+                      display: error ? "none" : "block",
                     }}
                     title="Preview content"
                   />
                 )}
               </article>
             ) : (
-              <div 
+              <div
                 className={cn(
                   "flex items-center justify-center bg-gray-50",
-                  deviceType === "desktop" 
-                    ? `h-[${config.height}${config.heightUnit}]` 
+                  deviceType === "desktop"
+                    ? `h-[${config.height}${config.heightUnit}]`
                     : "h-[400px]"
                 )}
                 role="region"
