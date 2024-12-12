@@ -6,19 +6,14 @@ import {
   WEBSITE_HOST,
   WEBSITE_NAME,
 } from "@/app/config";
-import { getFontClass } from "@/app/font/fonts";
 
 export default async function Footer({ locale }: { locale: string }) {
   const logo = (await import(`@/public/logo.svg`))
     .default;
-
   const commonT = await getTranslations("Common");
-
-  const fontClass = getFontClass(locale);
-
   return (
     <footer
-      className={`bg-gradient-to-r from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 shadow-lg ${fontClass.sans}`}
+      className={`bg-gradient-to-r from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 shadow-lg`}
     >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

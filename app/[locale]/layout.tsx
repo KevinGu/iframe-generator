@@ -10,8 +10,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 import { WEBSITE_NAME } from "../config";
-import FontProvider from "../font/FontProvider";
-import { fontVariables, getFontClass } from "../font/fonts";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 
@@ -68,23 +66,20 @@ async function RootLayout(props: LocaleProps) {
 
   const direction = ["ar", "fa", "he"].includes(locale) ? "rtl" : "ltr";
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
-  const fontClass = getFontClass(locale);
 
   return (
-    <html dir={direction} lang={locale} className={fontVariables}>
+    <html dir={direction} lang={locale}>
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
-      <body suppressHydrationWarning={true} className={fontClass.sans}>
+      <body suppressHydrationWarning={true} >
         <ProgressBarProviders>
           <Providers>
             <NextIntlClientProvider messages={messages}>
-              <FontProvider fontClass={fontClass}>
                 <div className="bg-base-100">
                   <Nav locale={locale} />
                   <main>{children}</main>
                   <Footer locale={locale} />
                 </div>
                 <LanguageSelectionWrapper />
-              </FontProvider>
             </NextIntlClientProvider>
           </Providers>
         </ProgressBarProviders>

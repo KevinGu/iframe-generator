@@ -5,7 +5,6 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@
 import { useLocale, useTranslations } from "next-intl";
 import { useParams } from 'next/navigation';
 import { useTransition } from 'react';
-import { getFontClass } from "@/app/font/fonts";
 import { ChevronDown } from "lucide-react";
 
 export default function LanguageSwitcher() {
@@ -15,7 +14,6 @@ export default function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
   const pathname = usePathname();
   const params = useParams();
-  const fontClass = getFontClass('en');
 
   function onSelectChange(nextLocale: string) {
     startTransition(() => {
@@ -36,7 +34,7 @@ export default function LanguageSwitcher() {
       <DropdownTrigger>
         <Button 
           variant="light" 
-          className={`${fontClass.sans} text-sm px-3 py-2 rounded-full hover:bg-blue-100 transition-colors duration-200`}
+          className={`text-sm px-3 py-2 rounded-full hover:bg-blue-100 transition-colors duration-200`}
         >
           {currentLanguage} <ChevronDown size={16} className="ml-1" />
         </Button>

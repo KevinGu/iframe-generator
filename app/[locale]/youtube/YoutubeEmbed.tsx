@@ -401,7 +401,7 @@ export default function YoutubeEmbed() {
                 <HelpCircle className="w-4 h-4 text-gray-400" />
               </Tooltip>
             </div>
-            <Select
+            {/* <Select
               label="封面质量"
               placeholder="选择封面质量"
               selectedKeys={[config.poster]}
@@ -412,7 +412,7 @@ export default function YoutubeEmbed() {
                   {option.label}
                 </SelectItem>
               ))}
-            </Select>
+            </Select> */}
           </div>
         </div>
       </div>
