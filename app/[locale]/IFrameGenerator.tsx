@@ -3,9 +3,11 @@
 import React, { useEffect, useState, useCallback, FocusEvent } from "react";
 import { IFrameConfig } from "../config/iframeTypes";
 import { useIframeStatus } from "../../hooks/useIframeStatus";
-import SettingsTabs from "../../components/SettingsTabs";
-import PreviewArea from "../../components/PreviewArea";
-import CodePreview from "../../components/CodePreview";
+import { 
+  DynamicSettingsTabs,
+  DynamicPreviewArea,
+  DynamicCodePreview 
+} from "../../utils/dynamic-components";
 import { isValidUrl, radiusPresets, normalizeUrl } from "../../utils/iframeHelpers";
 import { Input, Select, SelectItem } from "@nextui-org/react";
 import { Link2, LinkIcon } from "lucide-react";
@@ -444,7 +446,7 @@ const IFrameGenerator: React.FC = () => {
 
       {/* 设置选项卡 */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <SettingsTabs
+        <DynamicSettingsTabs
           config={config}
           updateConfig={updateConfig}
           errors={errors}
@@ -453,12 +455,12 @@ const IFrameGenerator: React.FC = () => {
 
       {/* 代码预览区域 */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <CodePreview generateHTML={generateHTML} />
+        <DynamicCodePreview generateHTML={generateHTML} />
       </div>
       
       {/* 预览区域 */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <PreviewArea
+        <DynamicPreviewArea
           config={config}
           error={error}
           loading={loading}
