@@ -16,52 +16,34 @@ const RecentlyUsed: React.FC<RecentlyUsedProps> = ({ setConfig }) => {
 
   // 初始化加载历史记录
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("iframe-url-history");
-      const history = saved ? JSON.parse(saved) : [];
-      // 如果超过限制，只保留最新的记录
-      const trimmedHistory = history.slice(0, MAX_HISTORY_ITEMS);
-      // 如果历史记录被裁剪了，更新localStorage
-      if (history.length > MAX_HISTORY_ITEMS) {
-        localStorage.setItem(
-          "iframe-url-history",
-          JSON.stringify(trimmedHistory)
-        );
+    const loadHistory = () => {
+      try {
+        const saved = localStorage.getItem("iframe-url-history");
+        const history = saved ? JSON.parse(saved) : [];
+        const trimmedHistory = history.slice(0, MAX_HISTORY_ITEMS);
+        setUrlHistory(trimmedHistory);
+      } catch (error) {
+        console.error("Failed to load history:", error);
+        setUrlHistory([]);
       }
-      setUrlHistory(trimmedHistory);
-    } catch (error) {
-      console.error("Failed to load history:", error);
-      setUrlHistory([]);
-    }
-  }, []);
+    };
 
-  // 添加新的历史记录
-  const addToHistory = useCallback((config: IFrameConfig) => {
-    setUrlHistory(prevHistory => {
-      // 检查是否已存在相同的URL
-      const existingIndex = prevHistory.findIndex(item => item.config.url === config.url);
-      let newHistory;
-      
-      if (existingIndex !== -1) {
-        // 如果URL已存在，移除旧的记录
-        newHistory = [...prevHistory];
-        newHistory.splice(existingIndex, 1);
-      } else {
-        newHistory = [...prevHistory];
+    // 初始加载
+    loadHistory();
+
+    // 添加 storage 事件监听器
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "iframe-url-history") {
+        loadHistory();
       }
-      
-      // 添加新记录到开头
-      newHistory.unshift({ config });
-      
-      // 保持历史记录数量在限制之内
-      if (newHistory.length > MAX_HISTORY_ITEMS) {
-        newHistory = newHistory.slice(0, MAX_HISTORY_ITEMS);
-      }
-      
-      // 更新localStorage
-      localStorage.setItem("iframe-url-history", JSON.stringify(newHistory));
-      return newHistory;
-    });
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // 清理函数
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   // 删除历史记录
@@ -115,7 +97,10 @@ const RecentlyUsed: React.FC<RecentlyUsedProps> = ({ setConfig }) => {
 }
 
 // 导出组件和添加历史记录的方法
-export { RecentlyUsed, type RecentlyUsedProps }
+export type { RecentlyUsedProps }
+export default RecentlyUsed
+
+// 导出组件和添加历史记录的方法
 export const useUrlHistory = () => {
   const addToHistory = useCallback((config: IFrameConfig) => {
     try {

@@ -1,9 +1,15 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, FocusEvent } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  FocusEvent,
+  Suspense,
+} from "react";
 import { IFrameConfig } from "../config/iframeTypes";
 import { useIframeStatus } from "../../hooks/useIframeStatus";
-import { useUrlHistory } from "../../components/RecentlyUsed";
+import RecentlyUsed, { useUrlHistory } from "../../components/RecentlyUsed";
 
 import {
   isValidUrl,
@@ -18,7 +24,12 @@ import {
   DynamicPreviewArea,
   DynamicSettingsTabs,
   DynamicRecentlyUsed,
+  LoadingRecentlyUsed,
+  LoadingSettings,
 } from "@/utils/dynamic-components";
+import CodePreview from "@/components/CodePreview";
+import PreviewArea from "@/components/PreviewArea";
+import SettingsTabs from "@/components/SettingsTabs";
 
 // 默认配置更新
 const defaultConfig: IFrameConfig = {
@@ -147,15 +158,27 @@ const IFrameGenerator: React.FC = () => {
   /**
    * 处理URL输入完成事件
    */
-  const handleUrlInputComplete = useCallback((url: string) => {
-    if (url && isValidUrl(url)) {
-      const normalizedUrl = normalizeUrl(url);
-      const newConfig = getDefaultConfigForUrl(normalizedUrl);
-      setConfig(newConfig);
-      // 添加到历史记录
-      addToHistory(newConfig);
-    }
-  }, [addToHistory]);
+  const handleUrlInputComplete = useCallback(
+    (url: string) => {
+      if (url && isValidUrl(url)) {
+        const normalizedUrl = normalizeUrl(url);
+        const newConfig = getDefaultConfigForUrl(normalizedUrl);
+        setConfig(newConfig);
+        
+        // 添加到历史记录
+        addToHistory(newConfig);
+        
+        // 手动触发一个 storage 事件来更新组件
+        const event = new StorageEvent('storage', {
+          key: 'iframe-url-history',
+          newValue: localStorage.getItem('iframe-url-history'),
+          storageArea: localStorage
+        });
+        window.dispatchEvent(event);
+      }
+    },
+    [addToHistory]
+  );
 
   /**
    * URL 输入处理
@@ -343,14 +366,13 @@ const IFrameGenerator: React.FC = () => {
             </div>
           </div>
 
-          {/* 历史记录列表 */}
           <DynamicRecentlyUsed setConfig={setConfig} />
         </div>
       </div>
 
       {/* 设置选项卡 */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <DynamicSettingsTabs
+        <SettingsTabs
           config={config}
           updateConfig={updateConfig}
           errors={errors}
@@ -359,12 +381,12 @@ const IFrameGenerator: React.FC = () => {
 
       {/* 代码预览区域 */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <DynamicCodePreview generateHTML={generateHTML} />
+        <CodePreview generateHTML={generateHTML} />
       </div>
 
       {/* 预览区域 */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <DynamicPreviewArea
+        <PreviewArea
           config={config}
           error={error}
           loading={loading}

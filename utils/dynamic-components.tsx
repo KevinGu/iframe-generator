@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import React from 'react'
 import { Skeleton } from '@nextui-org/react'
 
-const LoadingPreview: FC = () => (
+export const LoadingPreview: FC = () => (
   <div className="w-full min-h-[800px] flex flex-col gap-4">
     {/* 设备选择器 */}
     <div className="h-16 flex justify-between items-center">
@@ -31,7 +31,7 @@ const LoadingPreview: FC = () => (
   </div>
 )
 
-const LoadingCode: FC = () => (
+export const LoadingCode: FC = () => (
   <div className="w-full min-h-[400px] flex flex-col gap-4">
     {/* 代码头部 */}
     <div className="h-12 flex justify-between items-center">
@@ -50,7 +50,7 @@ const LoadingCode: FC = () => (
   </div>
 )
 
-const LoadingSettings: FC = () => (
+export const LoadingSettings: FC = () => (
   <div className="w-full min-h-[400px] space-y-4 p-4">
     {/* 固定高度的设置项 */}
     <div className="space-y-4">
@@ -63,7 +63,7 @@ const LoadingSettings: FC = () => (
   </div>
 )
 
-const LoadingRecentlyUsed: FC = () => (
+export const LoadingRecentlyUsed: FC = () => (
   <div className="w-full min-h-[50px] space-y-1 mt-8">
     <Skeleton className="w-full h-10 rounded-lg" />
   </div>
