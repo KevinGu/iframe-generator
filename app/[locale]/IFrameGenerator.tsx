@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback, FocusEvent } from "react";
 import { IFrameConfig } from "../config/iframeTypes";
 import { useIframeStatus } from "../../hooks/useIframeStatus";
+import { useUrlHistory } from "../../components/RecentlyUsed";
 
 import {
   isValidUrl,
@@ -65,35 +66,7 @@ const getDefaultConfigForUrl = (url: string): IFrameConfig => {
 };
 
 const IFrameGenerator: React.FC = () => {
-  // 添加历史记录状态，初始为空数组
-  const [urlHistory, setUrlHistory] = useState<
-    Array<{
-      url: string;
-      config: IFrameConfig;
-      timestamp: number;
-    }>
-  >([]);
-
-  // 添加初始化 effect
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("iframe-url-history");
-      const history = saved ? JSON.parse(saved) : [];
-      // 如果超过10条，只保留最新的10条
-      const trimmedHistory = history.slice(0, 10);
-      // 如果历史记录被裁剪了，更新localStorage
-      if (history.length > 10) {
-        localStorage.setItem(
-          "iframe-url-history",
-          JSON.stringify(trimmedHistory)
-        );
-      }
-      setUrlHistory(trimmedHistory);
-    } catch (error) {
-      console.error("Failed to load history:", error);
-      setUrlHistory([]);
-    }
-  }, []);
+  const { addToHistory } = useUrlHistory();
 
   // 管理配置状态
   const [config, setConfig] = useState<IFrameConfig>(defaultConfig);
@@ -157,7 +130,6 @@ const IFrameGenerator: React.FC = () => {
               "iframe-url-history",
               JSON.stringify(newHistory)
             );
-            setUrlHistory(newHistory);
 
             // 更新当前配置为归一化后的版本
             return configToSave;
@@ -175,35 +147,15 @@ const IFrameGenerator: React.FC = () => {
   /**
    * 处理URL输入完成事件
    */
-  const handleUrlInputComplete = (url: string) => {
-    // 确保有协议前缀并移除尾部斜杠
-    const fullUrl = (url.match(/^https?:\/\//) ? url : protocol + url).replace(
-      /\/+$/,
-      ""
-    );
-
-    if (url && url.includes(".")) {
-      try {
-        const normalizedUrl = normalizeUrl(fullUrl);
-        const savedConfigs = JSON.parse(
-          localStorage.getItem("iframeConfigs") || "{}"
-        );
-
-        if (savedConfigs[normalizedUrl]) {
-          updateConfig(savedConfigs[normalizedUrl]);
-        } else {
-          const defaultConfig = getDefaultConfigForUrl(normalizedUrl);
-          updateConfig(defaultConfig);
-        }
-      } catch (error) {
-        console.error("Failed to load saved configs:", error);
-        setErrors((prev) => ({
-          ...prev,
-          url: true,
-        }));
-      }
+  const handleUrlInputComplete = useCallback((url: string) => {
+    if (url && isValidUrl(url)) {
+      const normalizedUrl = normalizeUrl(url);
+      const newConfig = getDefaultConfigForUrl(normalizedUrl);
+      setConfig(newConfig);
+      // 添加到历史记录
+      addToHistory(newConfig);
     }
-  };
+  }, [addToHistory]);
 
   /**
    * URL 输入处理
@@ -317,21 +269,6 @@ const IFrameGenerator: React.FC = () => {
     handleError: handleIframeError,
   } = useIframeStatus(config.url);
 
-  /**
-   * 删除历史记录
-   */
-  const removeFromHistory = (urlToRemove: string) => {
-    try {
-      const newHistory = urlHistory.filter((item) => item.url !== urlToRemove);
-      setUrlHistory(newHistory);
-      localStorage.setItem("iframe-url-history", JSON.stringify(newHistory));
-    } catch (error) {
-      console.error("Failed to remove from history:", error);
-    }
-  };
-
-  // 从历史记录加载配置
-
   return (
     <div className="space-y-8">
       {/* URL 输入区域 */}
@@ -407,10 +344,7 @@ const IFrameGenerator: React.FC = () => {
           </div>
 
           {/* 历史记录列表 */}
-          <DynamicRecentlyUsed
-              urlHistory={urlHistory}
-              setConfig={setConfig}
-            />
+          <DynamicRecentlyUsed setConfig={setConfig} />
         </div>
       </div>
 

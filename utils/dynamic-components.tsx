@@ -98,6 +98,5 @@ export const DynamicRecentlyUsed = dynamic(
   () => import('../components/RecentlyUsed'),
   {
     loading: () => <LoadingRecentlyUsed />,
-    ssr: false
   }
 )

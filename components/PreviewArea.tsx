@@ -24,8 +24,8 @@ interface DevicePreset {
 
 const devicePresets: Record<DeviceType, DevicePreset> = {
   desktop: {
-    width: 1920,
-    height: 1080,
+    width: 1280,
+    height: 720,
     scale: 1,
     className: "",
     label: "Desktop",
@@ -93,8 +93,11 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
 
   // 添加预览刷新功能
   const refreshPreview = () => {
-    if (iframeRef.current) {
-      iframeRef.current.src = iframeRef.current.src;
+    if (iframeRef.current?.contentWindow) {
+      // 设置加载状态
+      handleLoad();
+      // 重新加载 iframe 内容
+      iframeRef.current.contentWindow.location.reload();
     }
   };
 
@@ -299,9 +302,8 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
             onPress={refreshPreview}
             variant="light"
             className="ml-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </Button>
+            isLoading={loading}
+          />
 
           <ButtonGroup variant="flat" aria-label="Device selection">
             <Button
@@ -336,19 +338,6 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
       </header>
 
       <main className="relative bg-gray-50" role="main">
-        {loading && (
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10"
-            role="status"
-            aria-live="polite"
-          >
-            <div className="text-center space-y-3">
-              <Spinner size="lg" color="primary" />
-              <p className="text-sm text-gray-700">Loading...</p>
-            </div>
-          </div>
-        )}
-
         {error && (
           <div
             className="absolute inset-0 flex flex-col items-center justify-center bg-white z-20 p-6"
@@ -387,7 +376,7 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
         <div
           className={`
             flex justify-center items-center
-            ${deviceType === "desktop" ? "min-h-[600px]" : "min-h-fit"}
+            ${deviceType === "desktop" ? "min-h-[200px]" : "min-h-fit"}
           `}
           role="region"
           aria-label="Preview container"
@@ -406,17 +395,6 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
                 className="relative bg-white h-full"
                 style={getContentContainerStyle()}
               >
-                {/* 加载状态显示 */}
-                {loading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10">
-                    <div className="text-center space-y-3">
-                      <Spinner size="lg" color="primary" />
-                      <p className="text-sm text-gray-700">Loading...</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* 错误状态显示 */}
                 {error && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-white z-20 p-6">
                     <div className="text-center max-w-md space-y-4">
@@ -450,7 +428,7 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
 
                 {!error && (
                   <iframe
-                    ref={iframeRef}
+                    ref={iframeRef as React.LegacyRef<HTMLIFrameElement>}
                     {...iframeProps}
                     onLoad={handleLoad}
                     onError={() =>
