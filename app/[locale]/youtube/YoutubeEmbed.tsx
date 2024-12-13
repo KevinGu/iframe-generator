@@ -63,6 +63,145 @@ const posterOptions = [
   { label: "最高质量", value: "maxresdefault" },
 ] as const;
 
+// Constants
+const HELP_ICON_CLASSES = "w-4 h-4 text-gray-400";
+const CODE_SECTION_CLASSES = "bg-gray-50 p-4 rounded-lg overflow-x-auto";
+const CODE_PREVIEW_CLASSES = "bg-white p-4 rounded border border-gray-200 overflow-x-auto";
+
+// Utility functions
+const isValidTimeFormat = (time: string): boolean => {
+  if (!time) return true;
+  const timeRegex = /^(\d+:)?[0-5]?\d:[0-5]\d$|^\d+$/;
+  return timeRegex.test(time);
+};
+
+const convertTimeToSeconds = (timeStr: string): number => {
+  if (!timeStr) return 0;
+  const parts = timeStr.split(":").map(Number);
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  } else if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  return Number(timeStr) || 0;
+};
+
+const extractVideoId = (url: string) => {
+  const regExp =
+    /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[7].length === 11 ? match[7] : "";
+};
+
+const getParams = (config: YoutubeConfig) => {
+  const params = [];
+  if (config.autoplay) params.push("autoplay=1");
+  if (config.mute) params.push("mute=1");
+  if (!config.controls) params.push("controls=0");
+  if (config.loop) params.push("loop=1&playlist=" + config.videoId);
+  if (config.modestBranding) params.push("modestbranding=1");
+  if (config.showCaptions) params.push("cc_load_policy=1");
+  if (config.quality !== "auto") params.push("vq=" + config.quality);
+  
+  const startTime = convertTimeToSeconds(config.startTime);
+  if (startTime > 0) params.push("start=" + startTime);
+  
+  const endTime = convertTimeToSeconds(config.endTime);
+  if (endTime > 0) params.push("end=" + endTime);
+  
+  return params.join("&");
+};
+
+const generateIframeCode = (config: YoutubeConfig) => {
+  if (!config.videoId) return "";
+  
+  const params = getParams(config);
+  const title = config.title || 'YouTube video player';
+  
+  const liteYoutubeHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${title}</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1.5.0/lite-youtube.js"></script>
+  <style>
+    body { margin: 0; }
+    lite-youtube {
+      width: 100%;
+      height: 100vh;
+      background-color: #000;
+    }
+  </style>
+</head>
+<body>
+  <lite-youtube
+    videoid="${config.videoId}"
+    ${config.title ? `playlabel="${config.title}"` : ''}
+    ${params ? `params="${params}"` : ''}
+    ${config.noCookie ? 'nocookie="true"' : ''}
+    poster="${config.poster}"
+    ${config.adNetwork ? 'adnetwork="true"' : ''}
+  ></lite-youtube>
+</body>
+</html>`;
+
+  const base64Html = typeof window !== 'undefined' ? 
+    btoa(liteYoutubeHtml) : 
+    Buffer.from(liteYoutubeHtml).toString('base64');
+
+  return `<iframe
+  width="${config.width}"
+  height="${config.height}"
+  src="data:text/html;base64,${base64Html}"
+  title="${title}"
+  frameborder="0"
+  allowfullscreen
+></iframe>`;
+};
+
+const generateStandardIframeCode = (config: YoutubeConfig) => {
+  if (!config.videoId) return "";
+  
+  const params = getParams(config);
+  const title = config.title || 'YouTube video player';
+  const src = `https://www.youtube${config.noCookie ? '-nocookie' : ''}.com/embed/${config.videoId}${params ? '?' + params : ''}`;
+  
+  return `<iframe
+  width="${config.width}"
+  height="${config.height}"
+  src="${src}"
+  title="${title}"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen
+></iframe>`;
+};
+
+const generateLiteYoutubeCode = (config: YoutubeConfig) => {
+  if (!config.videoId) return "";
+  
+  const params = getParams(config);
+  const attributes = [
+    `videoid="${config.videoId}"`,
+    `style="width:${config.width}; height:${config.height};"`,
+    config.title && `playlabel="${config.title}"`,
+    params && `params="${params}"`,
+    `noCookie="${config.noCookie}"`,
+    `poster="${config.poster}"`,
+    `adNetwork="${config.adNetwork}"`,
+  ].filter(Boolean).join('\n  ');
+
+  return `<!-- Import the Lite YouTube Embed script -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1.5.0/lite-youtube.js"></script>
+
+<!-- Add the Lite YouTube Embed component -->
+<lite-youtube 
+  ${attributes}
+></lite-youtube>`;
+};
+
 export default function YoutubeEmbed() {
   const [config, setConfig] = useState<YoutubeConfig>(defaultConfig);
   const [url, setUrl] = useState("");
@@ -93,137 +232,15 @@ export default function YoutubeEmbed() {
     };
   }, []);
 
-  const extractVideoId = (url: string) => {
-    const regExp =
-      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[7].length === 11 ? match[7] : "";
-  };
-
   const handleUrlChange = (value: string) => {
     setUrl(value);
     const videoId = extractVideoId(value);
     setConfig((prev) => ({ ...prev, videoId }));
   };
 
-  const convertTimeToSeconds = (timeStr: string): number => {
-    if (!timeStr) return 0;
-    const parts = timeStr.split(":").map(Number);
-    if (parts.length === 3) {
-      return parts[0] * 3600 + parts[1] * 60 + parts[2];
-    } else if (parts.length === 2) {
-      return parts[0] * 60 + parts[1];
-    }
-    return Number(timeStr) || 0;
-  };
-
-  const getParams = () => {
-    const params = [];
-    if (config.autoplay) params.push("autoplay=1");
-    if (config.mute) params.push("mute=1");
-    if (!config.controls) params.push("controls=0");
-    if (config.loop) params.push("loop=1&playlist=" + config.videoId);
-    if (config.modestBranding) params.push("modestbranding=1");
-    if (config.showCaptions) params.push("cc_load_policy=1");
-    if (config.quality !== "auto") params.push("vq=" + config.quality);
-    
-    const startTime = convertTimeToSeconds(config.startTime);
-    if (startTime > 0) params.push("start=" + startTime);
-    
-    const endTime = convertTimeToSeconds(config.endTime);
-    if (endTime > 0) params.push("end=" + endTime);
-    
-    return params.join("&");
-  };
-
-  const generateIframeCode = () => {
-    if (!config.videoId) return "";
-    
-    const params = getParams();
-    const title = config.title || 'YouTube video player';
-    
-    const liteYoutubeHtml = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${title}</title>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1.5.0/lite-youtube.js"></script>
-  <style>
-    body { margin: 0; }
-    lite-youtube {
-      width: 100%;
-      height: 100vh;
-      background-color: #000;
-    }
-  </style>
-</head>
-<body>
-  <lite-youtube
-    videoid="${config.videoId}"
-    ${config.title ? `playlabel="${config.title}"` : ''}
-    ${params ? `params="${params}"` : ''}
-    ${config.noCookie ? 'nocookie="true"' : ''}
-    poster="${config.poster}"
-    ${config.adNetwork ? 'adnetwork="true"' : ''}
-  ></lite-youtube>
-</body>
-</html>`;
-
-    const base64Html = typeof window !== 'undefined' ? 
-      btoa(liteYoutubeHtml) : 
-      Buffer.from(liteYoutubeHtml).toString('base64');
-
-    return `<iframe
-  width="${config.width}"
-  height="${config.height}"
-  src="data:text/html;base64,${base64Html}"
-  title="${title}"
-  frameborder="0"
-  allowfullscreen
-></iframe>`;
-  };
-
-  const generateStandardIframeCode = () => {
-    if (!config.videoId) return "";
-    
-    const params = getParams();
-    const title = config.title || 'YouTube video player';
-    const src = `https://www.youtube${config.noCookie ? '-nocookie' : ''}.com/embed/${config.videoId}${params ? '?' + params : ''}`;
-    
-    return `<iframe
-  width="${config.width}"
-  height="${config.height}"
-  src="${src}"
-  title="${title}"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  allowfullscreen
-></iframe>`;
-  };
-
-  const generateLiteYoutubeCode = () => {
-    if (!config.videoId) return "";
-    
-    const params = getParams();
-    const attributes = [
-      `videoid="${config.videoId}"`,
-      `style="width:${config.width}; height:${config.height};"`,
-      config.title && `playlabel="${config.title}"`,
-      params && `params="${params}"`,
-      `noCookie="${config.noCookie}"`,
-      `poster="${config.poster}"`,
-      `adNetwork="${config.adNetwork}"`,
-    ].filter(Boolean).join('\n  ');
-
-    return `<!-- Import the Lite YouTube Embed script -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1.5.0/lite-youtube.js"></script>
-
-<!-- Add the Lite YouTube Embed component -->
-<lite-youtube 
-  ${attributes}
-></lite-youtube>`;
+  const handleTimeChange = (field: 'startTime' | 'endTime', value: string) => {
+    if (!isValidTimeFormat(value)) return;
+    setConfig((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -260,33 +277,33 @@ export default function YoutubeEmbed() {
             <div className="flex items-center gap-2">
               <div className="text-sm">开始时间</div>
               <Tooltip content="设置视频开始播放的时间点（格式：分:秒 或 秒数）">
-                <HelpCircle className="w-4 h-4 text-gray-400" />
+                <HelpCircle className={HELP_ICON_CLASSES} />
               </Tooltip>
             </div>
             <Input
               placeholder="例如：1:30 或 90"
               value={config.startTime}
-              onChange={(e) => setConfig((prev) => ({ ...prev, startTime: e.target.value }))}
+              onChange={(e) => handleTimeChange('startTime', e.target.value)}
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="text-sm">结束时间</div>
               <Tooltip content="设置视频结束播放的时间点（格式：分:秒 或 秒数）">
-                <HelpCircle className="w-4 h-4 text-gray-400" />
+                <HelpCircle className={HELP_ICON_CLASSES} />
               </Tooltip>
             </div>
             <Input
               placeholder="例如：2:30 或 150"
               value={config.endTime}
-              onChange={(e) => setConfig((prev) => ({ ...prev, endTime: e.target.value }))}
+              onChange={(e) => handleTimeChange('endTime', e.target.value)}
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="text-sm">视频质量</div>
               <Tooltip content="设置视频的播放质量，实际质量可能受限于视频源和网络条件">
-                <HelpCircle className="w-4 h-4 text-gray-400" />
+                <HelpCircle className={HELP_ICON_CLASSES} />
               </Tooltip>
             </div>
             <Select
@@ -312,7 +329,7 @@ export default function YoutubeEmbed() {
               自动播放
             </Switch>
             <Tooltip content="视频加载后自动开始播放">
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              <HelpCircle className={HELP_ICON_CLASSES} />
             </Tooltip>
           </div>
           <div className="flex items-center gap-2">
@@ -323,7 +340,7 @@ export default function YoutubeEmbed() {
               静音
             </Switch>
             <Tooltip content="视频开始播放时静音">
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              <HelpCircle className={HELP_ICON_CLASSES} />
             </Tooltip>
           </div>
           <div className="flex items-center gap-2">
@@ -334,7 +351,7 @@ export default function YoutubeEmbed() {
               播放控件
             </Switch>
             <Tooltip content="显示视频播放控制栏">
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              <HelpCircle className={HELP_ICON_CLASSES} />
             </Tooltip>
           </div>
           <div className="flex items-center gap-2">
@@ -345,7 +362,7 @@ export default function YoutubeEmbed() {
               循环播放
             </Switch>
             <Tooltip content="视频播放完成后自动循环播放">
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              <HelpCircle className={HELP_ICON_CLASSES} />
             </Tooltip>
           </div>
           <div className="flex items-center gap-2">
@@ -356,7 +373,7 @@ export default function YoutubeEmbed() {
               简洁界面
             </Switch>
             <Tooltip content="减少 YouTube 品牌标识的显示">
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              <HelpCircle className={HELP_ICON_CLASSES} />
             </Tooltip>
           </div>
           <div className="flex items-center gap-2">
@@ -367,7 +384,7 @@ export default function YoutubeEmbed() {
               显示字幕
             </Switch>
             <Tooltip content="显示视频的隐藏式字幕（如果可用）">
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              <HelpCircle className={HELP_ICON_CLASSES} />
             </Tooltip>
           </div>
           <div className="flex items-center gap-2">
@@ -378,7 +395,7 @@ export default function YoutubeEmbed() {
               隐私模式
             </Switch>
             <Tooltip content="使用 youtube-nocookie.com 域名以增强隐私保护">
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              <HelpCircle className={HELP_ICON_CLASSES} />
             </Tooltip>
           </div>
           <div className="flex items-center gap-2">
@@ -389,7 +406,7 @@ export default function YoutubeEmbed() {
               广告网络
             </Switch>
             <Tooltip content="预加载 Google 广告网络（可能影响加载速度）">
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              <HelpCircle className={HELP_ICON_CLASSES} />
             </Tooltip>
           </div>
         </div>
@@ -398,7 +415,7 @@ export default function YoutubeEmbed() {
             <div className="flex items-center gap-2">
               <div className="text-sm">封面质量</div>
               <Tooltip content="设置视频缩略图的质量，较高质量可能增加初始加载时间">
-                <HelpCircle className="w-4 h-4 text-gray-400" />
+                <HelpCircle className={HELP_ICON_CLASSES} />
               </Tooltip>
             </div>
             {/* <Select
@@ -438,7 +455,7 @@ export default function YoutubeEmbed() {
                   <LiteYouTubeEmbed
                     id={config.videoId}
                     title={config.title}
-                    params={getParams()}
+                    params={getParams(config)}
                     noCookie={config.noCookie}
                     poster={config.poster}
                     adNetwork={config.adNetwork}
@@ -451,7 +468,7 @@ export default function YoutubeEmbed() {
           {/* Code Section */}
           <div className="grid gap-6">
             {/* Lite YouTube iFrame Code */}
-            <div className="bg-gray-50 p-4 rounded-lg overflow-x-auto">
+            <div className={CODE_SECTION_CLASSES}>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <div className="text-sm text-gray-600">Lite YouTube iFrame 代码</div>
@@ -461,21 +478,21 @@ export default function YoutubeEmbed() {
                   size="sm"
                   variant="flat"
                   onClick={() => {
-                    navigator.clipboard.writeText(generateIframeCode());
+                    navigator.clipboard.writeText(generateIframeCode(config));
                   }}
                 >
                   复制代码
                 </Button>
               </div>
-              <div className="bg-white p-4 rounded border border-gray-200 overflow-x-auto">
+              <div className={CODE_PREVIEW_CLASSES}>
                 <pre className="whitespace-pre-wrap break-words text-sm">
-                  <code>{generateIframeCode()}</code>
+                  <code>{generateIframeCode(config)}</code>
                 </pre>
               </div>
             </div>
 
             {/* Standard YouTube iFrame Code */}
-            <div className="bg-gray-50 p-4 rounded-lg overflow-x-auto">
+            <div className={CODE_SECTION_CLASSES}>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <div className="text-sm text-gray-600">标准 YouTube iFrame 代码</div>
@@ -485,21 +502,21 @@ export default function YoutubeEmbed() {
                   size="sm"
                   variant="flat"
                   onClick={() => {
-                    navigator.clipboard.writeText(generateStandardIframeCode());
+                    navigator.clipboard.writeText(generateStandardIframeCode(config));
                   }}
                 >
                   复制代码
                 </Button>
               </div>
-              <div className="bg-white p-4 rounded border border-gray-200 overflow-x-auto">
+              <div className={CODE_PREVIEW_CLASSES}>
                 <pre className="whitespace-pre-wrap break-words text-sm">
-                  <code>{generateStandardIframeCode()}</code>
+                  <code>{generateStandardIframeCode(config)}</code>
                 </pre>
               </div>
             </div>
 
             {/* Lite YouTube Component Code */}
-            <div className="bg-gray-50 p-4 rounded-lg overflow-x-auto">
+            <div className={CODE_SECTION_CLASSES}>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <div className="text-sm text-gray-600">Lite YouTube 组件代码</div>
@@ -509,15 +526,15 @@ export default function YoutubeEmbed() {
                   size="sm"
                   variant="flat"
                   onClick={() => {
-                    navigator.clipboard.writeText(generateLiteYoutubeCode());
+                    navigator.clipboard.writeText(generateLiteYoutubeCode(config));
                   }}
                 >
                   复制代码
                 </Button>
               </div>
-              <div className="bg-white p-4 rounded border border-gray-200 overflow-x-auto">
+              <div className={CODE_PREVIEW_CLASSES}>
                 <pre className="whitespace-pre-wrap break-words text-sm">
-                  <code>{generateLiteYoutubeCode()}</code>
+                  <code>{generateLiteYoutubeCode(config)}</code>
                 </pre>
               </div>
             </div>
