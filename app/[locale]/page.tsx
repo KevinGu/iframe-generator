@@ -4,9 +4,9 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: "IFrame Generator - Free HTML IFrame Maker",
     description:
-      "Free online IFrame Generator tool for creating secure, responsive and customizable iframe embeds. Generate HTML iframe code with advanced features like sandbox security, responsive sizing, and custom styling. Perfect for embedding content in websites, blogs and web applications.",
+      "Free online IFrame Generator tool for creating iframe embeds. Generate HTML iframe code for embedding content in websites, blogs and web applications.",
     keywords:
-      "iframe generator, iframe code generator, html iframe maker, responsive iframe, secure iframe generator, custom iframe generator, iframe builder, iframe creator, embed generator",
+      "iframe generator, iframe code generator, iframe maker, iframe builder, iframe creator",
   };
 }
 

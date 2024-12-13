@@ -246,16 +246,6 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-2">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-medium text-gray-900">Preview</h2>
-          {config.allowFullscreen && (
-            <Chip
-              variant="flat"
-              color="success"
-              className="text-gray-900"
-              aria-label="Fullscreen mode available"
-            >
-              Fullscreen enabled
-            </Chip>
-          )}
         </div>
 
         <nav
