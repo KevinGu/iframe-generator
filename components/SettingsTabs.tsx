@@ -93,7 +93,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
           title={
             <div className="flex items-center space-x-2">
               <Settings2Icon className="w-4 h-4" />
-              <span className="">Basic</span>
+              <span className="hidden sm:inline">Basic</span>
             </div>
           }
         >
@@ -116,9 +116,9 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
             />
 
             {/* 宽度和高度输入组 */}
-            <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               {/* 宽度输入组 */}
-              <div className="flex-1 flex space-x-2">
+              <div className="flex-1 flex gap-2">
                 <div className="flex-1">
                   <Input
                     label="Width"
@@ -199,27 +199,29 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
               </div>
             </div>
 
-            {/* 快速设置开关组 */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg" role="group" aria-label="Quick settings">
-              <div className="flex items-center gap-1">
+            {/* 
+             */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg" role="group" aria-label="Quick settings">
+              <div className="flex items-center justify-between">
                 <Switch
                   isSelected={config.scrolling ?? true}
                   onValueChange={(checked) =>
                     updateConfig((prev) => ({ ...prev, scrolling: checked }))
                   }
                   aria-label="Allow scrolling"
+                  className="flex-1"
                 >
-                  Allow Scrolling
+                  <span className="mr-2">Allow Scrolling</span>
                 </Switch>
                 <Tooltip
                   content="Allow scrolling within iframe content"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help flex-shrink-0" />
                 </Tooltip>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center justify-between">
                 <Switch
                   isSelected={config.allowFullscreen}
                   onValueChange={(checked) =>
@@ -232,18 +234,19 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     }))
                   }
                   aria-label="Allow fullscreen mode"
+                  className="flex-1"
                 >
-                  Allow Fullscreen
+                  <span className="mr-2">Allow Fullscreen</span>
                 </Switch>
                 <Tooltip
                   content="Allow iframe content to enter fullscreen mode, which requires internal page support"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help flex-shrink-0" />
                 </Tooltip>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center justify-between">
                 <Switch
                   isSelected={config.loading === "lazy"}
                   onValueChange={(checked) =>
@@ -253,14 +256,15 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     }))
                   }
                   aria-label="Enable lazy loading"
+                  className="flex-1"
                 >
-                  Lazy Loading
+                  <span className="mr-2">Lazy Loading</span>
                 </Switch>
                 <Tooltip
                   content="Only load content when iframe enters the viewport, which can improve page performance"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help flex-shrink-0" />
                 </Tooltip>
               </div>
             </div>
@@ -273,14 +277,14 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
           title={
             <div className="flex items-center space-x-2">
               <PaintbrushIcon className="w-4 h-4" />
-              <span className="">Style</span>
+              <span className="hidden sm:inline">Style</span>
             </div>
           }
         >
           <div className="py-4 space-y-6">
             {/* 边框设置 */}
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <Input
                   label="Border Size"
                   labelPlacement="outside"
@@ -505,7 +509,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
           title={
             <div className="flex items-center space-x-2">
               <ShieldIcon className="w-4 h-4" />
-              <span className="">Security</span>
+              <span className="hidden sm:inline">Security</span>
             </div>
           }
         >
@@ -596,7 +600,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
           title={
             <div className="flex items-center space-x-2">
               <WrenchIcon className="w-4 h-4" />
-              <span className="">Advanced</span>
+              <span className="hidden sm:inline">Advanced</span>
             </div>
           }
         >

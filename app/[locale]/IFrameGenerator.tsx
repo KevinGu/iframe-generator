@@ -293,108 +293,114 @@ const IFrameGenerator: React.FC = () => {
   } = useIframeStatus(config.url);
 
   return (
-    <div className="space-y-8">
-      {/* URL 输入区域 */}
-      <div className="sticky top-0 z-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-gray-100 transition-all duration-200">
-          <div className="flex items-center">
-            <h2 className="text-xl font-semibold mr-4 min-w-[6rem]">
-              Website URL
-            </h2>
-            <div className="flex-1 w-full flex items-center gap-2">
-              <Select
-                value={protocol}
-                onChange={(e) => setProtocol(e.target.value)}
-                defaultSelectedKeys={["https://"]}
-                className="w-[140px]"
-                size="lg"
-                variant="bordered"
-                radius="sm"
-                classNames={{
-                  trigger:
-                    "h-[50px] bg-gray-50/50 border-gray-200 hover:bg-gray-100/70",
-                  value: "text-gray-600 font-mono text-sm",
-                }}
-              >
-                <SelectItem
-                  key="https://"
-                  value="https://"
-                  className="font-mono text-sm"
+    <div className="flex flex-col lg:flex-row gap-8 max-w-[1800px] mx-auto">
+      {/* 左侧设置区域 */}
+      <div className="w-full lg:w-[800px] space-y-8">
+        {/* URL 输入区域 */}
+        <div className="sticky top-0 z-50">
+          <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-gray-100 transition-all duration-200">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-xl font-semibold">
+                Website URL
+              </h2>
+              <div className="w-full flex items-center gap-2">
+                <Select
+                  value={protocol}
+                  onChange={(e) => setProtocol(e.target.value)}
+                  defaultSelectedKeys={["https://"]}
+                  className="w-[140px]"
+                  size="lg"
+                  variant="bordered"
+                  radius="sm"
+                  classNames={{
+                    trigger:
+                      "h-[50px] bg-gray-50/50 border-gray-200 hover:bg-gray-100/70",
+                    value: "text-gray-600 font-mono text-sm",
+                  }}
                 >
-                  https://
-                </SelectItem>
-                <SelectItem
-                  key="http://"
-                  value="http://"
-                  className="font-mono text-sm"
-                >
-                  http://
-                </SelectItem>
-              </Select>
+                  <SelectItem
+                    key="https://"
+                    value="https://"
+                    className="font-mono text-sm"
+                  >
+                    https://
+                  </SelectItem>
+                  <SelectItem
+                    key="http://"
+                    value="http://"
+                    className="font-mono text-sm"
+                  >
+                    http://
+                  </SelectItem>
+                </Select>
 
-              <Input
-                placeholder="Enter website URL to embed (protocol not needed)"
-                radius="none"
-                size="lg"
-                variant="underlined"
-                labelPlacement="outside-left"
-                value={config.url.replace(/^(https?:\/\/)/, "")} // 显示时去掉协议部分
-                onChange={(e) => handleUrlChange(e.target.value)}
-                isInvalid={errors.url}
-                errorMessage={errors.url && "Please enter a valid website URL"}
-                startContent={
-                  <Link2 className="w-5 h-5 text-gray-400/90 flex-shrink-0" />
-                }
-                maxLength={2000}
-                classNames={{
-                  mainWrapper: "h-[50px] flex-1",
-                  input: "text-gray-700",
-                  inputWrapper:
-                    "h-[50px] border-b-2 border-gray-200 hover:border-gray-300 focus-within:border-primary",
-                }}
-                onBlur={(e: FocusEvent<Element>) => {
-                  const target = e.target as HTMLInputElement;
-                  handleUrlInputComplete(target.value);
-                }}
-                onKeyDown={(e: React.KeyboardEvent<Element>) => {
-                  if (e.key === "Enter") {
-                    const target = e.currentTarget as HTMLInputElement;
-                    handleUrlInputComplete(target.value);
+                <Input
+                  placeholder="Enter website URL to embed (protocol not needed)"
+                  radius="none"
+                  size="lg"
+                  variant="underlined"
+                  labelPlacement="outside-left"
+                  value={config.url.replace(/^(https?:\/\/)/, "")}
+                  onChange={(e) => handleUrlChange(e.target.value)}
+                  isInvalid={errors.url}
+                  errorMessage={errors.url && "Please enter a valid website URL"}
+                  startContent={
+                    <Link2 className="w-5 h-5 text-gray-400/90 flex-shrink-0" />
                   }
-                }}
-              />
+                  maxLength={2000}
+                  classNames={{
+                    mainWrapper: "h-[50px] flex-1",
+                    input: "text-gray-700",
+                    inputWrapper:
+                      "h-[50px] border-b-2 border-gray-200 hover:border-gray-300 focus-within:border-primary",
+                  }}
+                  onBlur={(e: FocusEvent<Element>) => {
+                    const target = e.target as HTMLInputElement;
+                    handleUrlInputComplete(target.value);
+                  }}
+                  onKeyDown={(e: React.KeyboardEvent<Element>) => {
+                    if (e.key === "Enter") {
+                      const target = e.currentTarget as HTMLInputElement;
+                      handleUrlInputComplete(target.value);
+                    }
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          <DynamicRecentlyUsed setConfig={setConfig} />
+            <DynamicRecentlyUsed setConfig={setConfig} />
+          </div>
+        </div>
+
+        {/* 设置选项卡 */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <SettingsTabs
+            config={config}
+            updateConfig={updateConfig}
+            errors={errors}
+          />
         </div>
       </div>
 
-      {/* 设置选项卡 */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <SettingsTabs
-          config={config}
-          updateConfig={updateConfig}
-          errors={errors}
-        />
-      </div>
+      {/* 右侧预览区域 */}
+      <div className="w-full lg:w-[700px] space-y-8">
+        {/* 代码预览区域 */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <CodePreview generateHTML={generateHTML} />
+        </div>
 
-      {/* 代码预览区域 */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <CodePreview generateHTML={generateHTML} />
-      </div>
-
-      {/* 预览区域 */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <PreviewArea
-          config={config}
-          error={error}
-          loading={loading}
-          iframeRef={iframeRef}
-          handleLoad={handleLoad}
-          handleIframeError={handleIframeError}
-          generateStyles={generateStyles}
-        />
+        {/* 预览区域 */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <PreviewArea
+            config={config}
+            error={error}
+            loading={loading}
+            iframeRef={iframeRef}
+            handleLoad={handleLoad}
+            handleIframeError={handleIframeError}
+            generateStyles={generateStyles}
+          />
+        </div>
       </div>
     </div>
   );

@@ -5,8 +5,6 @@ import {
   Monitor,
   Tablet,
   Smartphone,
-  RefreshCw,
-  CheckIcon,
 } from "lucide-react";
 import { generateIframeProps } from "@/utils/iframeHelpers";
 import { IframeError, getIframeErrorMessage } from "@/app/config/iframeTypes";
@@ -91,16 +89,6 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
     return currentDevice.scale;
   };
 
-  // 添加预览刷新功能
-  const refreshPreview = () => {
-    if (iframeRef.current?.contentWindow) {
-      // 设置加载状态
-      handleLoad();
-      // 重新加载 iframe 内容
-      iframeRef.current.contentWindow.location.reload();
-    }
-  };
-
   // 添加设备切换动画状态
   const [isChangingDevice, setIsChangingDevice] = useState(false);
 
@@ -141,8 +129,10 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
     const configWidth = parseInt(config.width);
     const configHeight = parseInt(config.height);
     return (
-      configWidth <= devicePresets[deviceType].width ||
-      configHeight <= devicePresets[deviceType].height
+      deviceType !== "desktop" && (
+        configWidth <= devicePresets[deviceType].width ||
+        configHeight <= devicePresets[deviceType].height
+      )
     );
   };
 
@@ -253,12 +243,11 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
 
   return (
     <section className="space-y-4" aria-label="Preview section">
-      <header className="flex justify-between items-center">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-2">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-medium text-gray-900">Preview</h2>
           {config.allowFullscreen && (
             <Chip
-              startContent={<CheckIcon size={18} />}
               variant="flat"
               color="success"
               className="text-gray-900"
@@ -269,71 +258,81 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
         </div>
 
         <nav
-          className="flex items-center space-x-4"
+          className="w-full sm:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-2"
           aria-label="Preview controls"
         >
           <ul
-            className="text-sm text-gray-700 space-x-3 flex items-center"
+            className="w-full sm:w-auto text-sm text-gray-700 flex flex-wrap items-center gap-3"
             aria-label="Preview size information"
           >
+            {loading && (
+              <li className="flex items-center gap-2" role="status">
+                <Spinner size="sm" color="primary" />
+                <span>Loading preview...</span>
+              </li>
+            )}
             {(() => {
               const { device, content, scaled } = getPreviewSizeInfo();
               return (
                 <>
-                  <li aria-label="Device info">
+                  <li aria-label="Device info" className="flex items-center gap-1.5">
+                    {deviceType === 'desktop' && <Monitor className="w-4 h-4" />}
+                    {deviceType === 'tablet' && <Tablet className="w-4 h-4" />}
+                    {deviceType === 'mobile' && <Smartphone className="w-4 h-4" />}
                     <span>{device}</span>
                   </li>
-                  <li aria-label="Content size">
-                    <span>{content}</span>
-                  </li>
-                  {scaled && (
-                    <li aria-label="Scaled size">
-                      <span>{scaled}</span>
-                    </li>
-                  )}
                 </>
               );
             })()}
           </ul>
 
-          <Button
-            isIconOnly
-            aria-label="Refresh preview"
-            onPress={refreshPreview}
-            variant="light"
-            className="ml-2"
-            isLoading={loading}
-          />
-
-          <ButtonGroup variant="flat" aria-label="Device selection">
-            <Button
-              isIconOnly
-              aria-label="Desktop view"
-              aria-pressed={deviceType === "desktop"}
-              onPress={() => handleDeviceChange("desktop")}
-              className={deviceType === "desktop" ? "bg-blue-300" : ""}
+          <div className="flex items-center gap-2">
+            <ButtonGroup
+              variant="flat"
+              className="h-unit-10"
+              aria-label="Device preview options"
             >
-              <Monitor className="w-4 h-4" />
-            </Button>
-            <Button
-              isIconOnly
-              aria-label="Tablet view"
-              aria-pressed={deviceType === "tablet"}
-              onPress={() => handleDeviceChange("tablet")}
-              className={deviceType === "tablet" ? "bg-blue-300" : ""}
-            >
-              <Tablet className="w-4 h-4" />
-            </Button>
-            <Button
-              isIconOnly
-              aria-label="Mobile view"
-              aria-pressed={deviceType === "mobile"}
-              onPress={() => handleDeviceChange("mobile")}
-              className={deviceType === "mobile" ? "bg-blue-300" : ""}
-            >
-              <Smartphone className="w-4 h-4" />
-            </Button>
-          </ButtonGroup>
+              <Button
+                isIconOnly
+                aria-label="Desktop preview"
+                className={cn(
+                  "px-0 min-w-unit-10",
+                  deviceType === "desktop"
+                    ? "bg-primary-100 text-primary-600"
+                    : "text-gray-700"
+                )}
+                onPress={() => handleDeviceChange("desktop")}
+              >
+                <Monitor className="w-4 h-4" />
+              </Button>
+              <Button
+                isIconOnly
+                aria-label="Tablet preview"
+                className={cn(
+                  "px-0 min-w-unit-10",
+                  deviceType === "tablet"
+                    ? "bg-primary-100 text-primary-600"
+                    : "text-gray-700"
+                )}
+                onPress={() => handleDeviceChange("tablet")}
+              >
+                <Tablet className="w-4 h-4" />
+              </Button>
+              <Button
+                isIconOnly
+                aria-label="Mobile preview"
+                className={cn(
+                  "px-0 min-w-unit-10",
+                  deviceType === "mobile"
+                    ? "bg-primary-100 text-primary-600"
+                    : "text-gray-700"
+                )}
+                onPress={() => handleDeviceChange("mobile")}
+              >
+                <Smartphone className="w-4 h-4" />
+              </Button>
+            </ButtonGroup>
+          </div>
         </nav>
       </header>
 
@@ -434,6 +433,10 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
                     onError={() =>
                       handleIframeError(new Error("iframe加载失败"))
                     }
+                    className={cn(
+                      "w-full h-full border-0",
+                      loading && "opacity-50 transition-opacity duration-300"
+                    )}
                     style={{
                       ...generateStyles(),
                       width: "100%",
