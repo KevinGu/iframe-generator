@@ -2,7 +2,7 @@ import IFrameGenerator from "./IFrameGenerator";
 
 export async function generateMetadata({ params }: Props) {
   return {
-    title: "IFrame Generator - Professional HTML IFrame Code Generator Tool",
+    title: "IFrame Generator - Free HTML IFrame Maker",
     description:
       "Free online IFrame Generator tool for creating secure, responsive and customizable iframe embeds. Generate HTML iframe code with advanced features like sandbox security, responsive sizing, and custom styling. Perfect for embedding content in websites, blogs and web applications.",
     keywords:
@@ -22,12 +22,12 @@ export default async function Home(props: Props) {
         {/* Header section */}
         <header className="text-center mb-12" role="banner">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            IFrame Generator - Create HTML IFrames Instantly
+            IFrame Generator - Free HTML IFrame Maker
           </h1>
           <p className="text-lg text-gray-600">
             The most powerful and user-friendly IFrame Generator for creating
             secure, responsive and customizable iframe embeds. Our professional
-            IFrame Generator tool provides advanced features like sandbox
+            IFrame Maker tool provides advanced features like sandbox
             security, responsive sizing, and custom styling. Try our free IFrame
             Generator today - perfect for websites, blogs, and web applications.
           </p>
