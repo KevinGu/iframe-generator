@@ -82,17 +82,21 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
     <div className="space-y-4">
       {/* Tabs Component */}
       <Tabs 
-        aria-label="Settings" 
+        aria-label="IFrame Settings Options" 
         radius="full" 
         color="primary"
         defaultSelectedKey="basic"
+        classNames={{
+          tabList: "gap-4",
+          tab: "data-[selected=true]:font-medium",
+        }}
       >
         {/* 基础设置 Tab */}
         <Tab
           key="basic"
           title={
-            <div className="flex items-center space-x-2">
-              <Settings2Icon className="w-4 h-4" />
+            <div className="flex items-center space-x-2" aria-label="Basic Settings">
+              <Settings2Icon className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Basic</span>
             </div>
           }
@@ -275,8 +279,8 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
         <Tab
           key="style"
           title={
-            <div className="flex items-center space-x-2">
-              <PaintbrushIcon className="w-4 h-4" />
+            <div className="flex items-center space-x-2" aria-label="Style Settings">
+              <PaintbrushIcon className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Style</span>
             </div>
           }
@@ -507,8 +511,8 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
         <Tab
           key="security"
           title={
-            <div className="flex items-center space-x-2">
-              <ShieldIcon className="w-4 h-4" />
+            <div className="flex items-center space-x-2" aria-label="Security Settings">
+              <ShieldIcon className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Security</span>
             </div>
           }
@@ -598,8 +602,8 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
         <Tab
           key="advanced"
           title={
-            <div className="flex items-center space-x-2">
-              <WrenchIcon className="w-4 h-4" />
+            <div className="flex items-center space-x-2" aria-label="Advanced Settings">
+              <WrenchIcon className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Advanced</span>
             </div>
           }

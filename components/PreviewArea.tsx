@@ -26,21 +26,21 @@ const devicePresets: Record<DeviceType, DevicePreset> = {
     height: 720,
     scale: 1,
     className: "",
-    label: "Desktop",
+    label: "Desktop Preview",
   },
   tablet: {
     width: 768,
     height: 1024,
     scale: 1,
     className: "rounded-lg",
-    label: "Tablet",
+    label: "Tablet Preview",
   },
   mobile: {
     width: 375,
     height: 667,
     scale: 1,
     className: "rounded-xl",
-    label: "Mobile",
+    label: "Mobile Preview",
   },
 };
 
@@ -251,8 +251,9 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
               variant="flat"
               color="success"
               className="text-gray-900"
+              aria-label="Fullscreen mode available"
             >
-              Fullscreen
+              Fullscreen enabled
             </Chip>
           )}
         </div>
@@ -266,8 +267,8 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
             aria-label="Preview size information"
           >
             {loading && (
-              <li className="flex items-center gap-2" role="status">
-                <Spinner size="sm" color="primary" />
+              <li className="flex items-center gap-2" role="status" aria-live="polite">
+                <Spinner size="sm" color="primary" aria-hidden="true" />
                 <span>Loading preview...</span>
               </li>
             )}
@@ -275,10 +276,10 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
               const { device, content, scaled } = getPreviewSizeInfo();
               return (
                 <>
-                  <li aria-label="Device info" className="flex items-center gap-1.5">
-                    {deviceType === 'desktop' && <Monitor className="w-4 h-4" />}
-                    {deviceType === 'tablet' && <Tablet className="w-4 h-4" />}
-                    {deviceType === 'mobile' && <Smartphone className="w-4 h-4" />}
+                  <li aria-label={`Current device: ${device}`} className="flex items-center gap-1.5">
+                    {deviceType === 'desktop' && <Monitor className="w-4 h-4" aria-hidden="true" />}
+                    {deviceType === 'tablet' && <Tablet className="w-4 h-4" aria-hidden="true" />}
+                    {deviceType === 'mobile' && <Smartphone className="w-4 h-4" aria-hidden="true" />}
                     <span>{device}</span>
                   </li>
                 </>
@@ -294,7 +295,8 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
             >
               <Button
                 isIconOnly
-                aria-label="Desktop preview"
+                aria-label={devicePresets.desktop.label}
+                aria-pressed={deviceType === "desktop"}
                 className={cn(
                   "px-0 min-w-unit-10",
                   deviceType === "desktop"
@@ -303,11 +305,12 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
                 )}
                 onPress={() => handleDeviceChange("desktop")}
               >
-                <Monitor className="w-4 h-4" />
+                <Monitor className="w-4 h-4" aria-hidden="true" />
               </Button>
               <Button
                 isIconOnly
-                aria-label="Tablet preview"
+                aria-label={devicePresets.tablet.label}
+                aria-pressed={deviceType === "tablet"}
                 className={cn(
                   "px-0 min-w-unit-10",
                   deviceType === "tablet"
@@ -316,11 +319,12 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
                 )}
                 onPress={() => handleDeviceChange("tablet")}
               >
-                <Tablet className="w-4 h-4" />
+                <Tablet className="w-4 h-4" aria-hidden="true" />
               </Button>
               <Button
                 isIconOnly
-                aria-label="Mobile preview"
+                aria-label={devicePresets.mobile.label}
+                aria-pressed={deviceType === "mobile"}
                 className={cn(
                   "px-0 min-w-unit-10",
                   deviceType === "mobile"
@@ -329,7 +333,7 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
                 )}
                 onPress={() => handleDeviceChange("mobile")}
               >
-                <Smartphone className="w-4 h-4" />
+                <Smartphone className="w-4 h-4" aria-hidden="true" />
               </Button>
             </ButtonGroup>
           </div>
@@ -443,7 +447,8 @@ const PreviewArea: React.FC<PreviewAreaProps> = ({
                       height: "100%",
                       display: error ? "none" : "block",
                     }}
-                    title="Preview content"
+                    title={`Preview of ${config.url || 'empty content'}`}
+                    aria-label={`Preview of ${config.url || 'empty content'}`}
                   />
                 )}
               </article>
