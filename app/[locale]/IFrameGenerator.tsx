@@ -164,15 +164,15 @@ const IFrameGenerator: React.FC = () => {
         const normalizedUrl = normalizeUrl(url);
         const newConfig = getDefaultConfigForUrl(normalizedUrl);
         setConfig(newConfig);
-        
+
         // 添加到历史记录
         addToHistory(newConfig);
-        
+
         // 手动触发一个 storage 事件来更新组件
-        const event = new StorageEvent('storage', {
-          key: 'iframe-url-history',
-          newValue: localStorage.getItem('iframe-url-history'),
-          storageArea: localStorage
+        const event = new StorageEvent("storage", {
+          key: "iframe-url-history",
+          newValue: localStorage.getItem("iframe-url-history"),
+          storageArea: localStorage,
         });
         window.dispatchEvent(event);
       }
@@ -297,79 +297,76 @@ const IFrameGenerator: React.FC = () => {
       {/* 左侧设置区域 */}
       <div className="w-full lg:w-[800px] space-y-8">
         {/* URL 输入区域 */}
-        <div className="sticky top-0 z-50">
-          <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-gray-100 transition-all duration-200">
-            <div className="flex flex-col gap-4">
-              <h2 className="text-xl font-semibold">
-                Website URL
-              </h2>
-              <div className="w-full flex items-center gap-2">
-                <Select
-                  value={protocol}
-                  onChange={(e) => setProtocol(e.target.value)}
-                  defaultSelectedKeys={["https://"]}
-                  className="w-[140px]"
-                  size="lg"
-                  variant="bordered"
-                  radius="sm"
-                  classNames={{
-                    trigger:
-                      "h-[50px] bg-gray-50/50 border-gray-200 hover:bg-gray-100/70",
-                    value: "text-gray-600 font-mono text-sm",
-                  }}
+
+        <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-gray-100 transition-all duration-200">
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl font-semibold">Website URL</h2>
+            <div className="w-full flex items-center gap-2">
+              <Select
+                value={protocol}
+                onChange={(e) => setProtocol(e.target.value)}
+                defaultSelectedKeys={["https://"]}
+                className="w-[140px]"
+                size="lg"
+                variant="bordered"
+                radius="sm"
+                classNames={{
+                  trigger:
+                    "h-[50px] bg-gray-50/50 border-gray-200 hover:bg-gray-100/70",
+                  value: "text-gray-600 font-mono text-sm",
+                }}
+              >
+                <SelectItem
+                  key="https://"
+                  value="https://"
+                  className="font-mono text-sm"
                 >
-                  <SelectItem
-                    key="https://"
-                    value="https://"
-                    className="font-mono text-sm"
-                  >
-                    https://
-                  </SelectItem>
-                  <SelectItem
-                    key="http://"
-                    value="http://"
-                    className="font-mono text-sm"
-                  >
-                    http://
-                  </SelectItem>
-                </Select>
+                  https://
+                </SelectItem>
+                <SelectItem
+                  key="http://"
+                  value="http://"
+                  className="font-mono text-sm"
+                >
+                  http://
+                </SelectItem>
+              </Select>
 
-                <Input
-                  placeholder="Enter website URL to embed (protocol not needed)"
-                  radius="none"
-                  size="lg"
-                  variant="underlined"
-                  labelPlacement="outside-left"
-                  value={config.url.replace(/^(https?:\/\/)/, "")}
-                  onChange={(e) => handleUrlChange(e.target.value)}
-                  isInvalid={errors.url}
-                  errorMessage={errors.url && "Please enter a valid website URL"}
-                  startContent={
-                    <Link2 className="w-5 h-5 text-gray-400/90 flex-shrink-0" />
-                  }
-                  maxLength={2000}
-                  classNames={{
-                    mainWrapper: "h-[50px] flex-1",
-                    input: "text-gray-700",
-                    inputWrapper:
-                      "h-[50px] border-b-2 border-gray-200 hover:border-gray-300 focus-within:border-primary",
-                  }}
-                  onBlur={(e: FocusEvent<Element>) => {
-                    const target = e.target as HTMLInputElement;
+              <Input
+                placeholder="Enter website URL to embed (protocol not needed)"
+                radius="none"
+                size="lg"
+                variant="underlined"
+                labelPlacement="outside-left"
+                value={config.url.replace(/^(https?:\/\/)/, "")}
+                onChange={(e) => handleUrlChange(e.target.value)}
+                isInvalid={errors.url}
+                errorMessage={errors.url && "Please enter a valid website URL"}
+                startContent={
+                  <Link2 className="w-5 h-5 text-gray-400/90 flex-shrink-0" />
+                }
+                maxLength={2000}
+                classNames={{
+                  mainWrapper: "h-[50px] flex-1",
+                  input: "text-gray-700",
+                  inputWrapper:
+                    "h-[50px] border-b-2 border-gray-200 hover:border-gray-300 focus-within:border-primary",
+                }}
+                onBlur={(e: FocusEvent<Element>) => {
+                  const target = e.target as HTMLInputElement;
+                  handleUrlInputComplete(target.value);
+                }}
+                onKeyDown={(e: React.KeyboardEvent<Element>) => {
+                  if (e.key === "Enter") {
+                    const target = e.currentTarget as HTMLInputElement;
                     handleUrlInputComplete(target.value);
-                  }}
-                  onKeyDown={(e: React.KeyboardEvent<Element>) => {
-                    if (e.key === "Enter") {
-                      const target = e.currentTarget as HTMLInputElement;
-                      handleUrlInputComplete(target.value);
-                    }
-                  }}
-                />
-              </div>
+                  }
+                }}
+              />
             </div>
-
-            <DynamicRecentlyUsed setConfig={setConfig} />
           </div>
+
+          <DynamicRecentlyUsed setConfig={setConfig} />
         </div>
 
         {/* 设置选项卡 */}
