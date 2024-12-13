@@ -83,7 +83,6 @@ async function RootLayout(props: LocaleProps) {
             </NextIntlClientProvider>
           </Providers>
         </ProgressBarProviders>
-        <SpeedInsights />
       </body>
     </html>
   );

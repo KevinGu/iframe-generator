@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { generateIframeProps } from "@/utils/iframeHelpers";
 import { IframeError, getIframeErrorMessage } from "@/app/config/iframeTypes";
-import cn from "classnames";
+import cn from "clsx";
 
 type DeviceType = "desktop" | "tablet" | "mobile";
 
