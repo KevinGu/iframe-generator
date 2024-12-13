@@ -95,8 +95,8 @@ export default async function Nav({ locale }: { locale: string }) {
 
       {/* 中间导航项 */}
       <NavbarContent className="hidden sm:flex gap-2 flex-1" justify="center">
-        {menuItems.map((item) => (
-          <NavbarItem isActive={item.isActive}>
+        {menuItems.map((item, index) => (
+          <NavbarItem key={`${item.name}-${index}`} isActive={item.isActive}>
             <Link
               color={item.isActive ? "primary" : "foreground"}
               href={item.href}
