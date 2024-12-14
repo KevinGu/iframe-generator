@@ -31,7 +31,6 @@ export default async function Nav({ locale }: { locale: string }) {
 
   // 使配置文件中的菜单项
   const t = await getTranslations("Nav");
-  const commonT = await getTranslations("Common");
   const menuItems: MenuItem[] = menuConfig["default"](
     t,
     currentPath,

@@ -19,10 +19,10 @@ export const menuConfig: MenuConfig = {
       href: "/",
       isActive: currentPath === `${localePrefix}` || currentPath === `${localePrefix}/`,
     },
-    // {
-    //   name: t("YouTube Embed"),
-    //   href: "/youtube",
-    //   isActive: currentPath.startsWith(`${localePrefix}/youtube`),
-    // },
+    {
+      name: t("YouTube Embed"),
+      href: "/youtube-embed",
+      isActive: currentPath.startsWith(`${localePrefix}/youtube-embed`),
+    },
   ],
 };

@@ -203,29 +203,29 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
               </div>
             </div>
 
-            {/* 
-             */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg" role="group" aria-label="Quick settings">
-              <div className="flex items-center justify-between">
+            {/* 快速设置组 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 bg-gray-50 rounded-lg" role="group" aria-label="Quick settings">
+              <div className="flex items-center gap-1">
                 <Switch
                   isSelected={config.scrolling ?? true}
                   onValueChange={(checked) =>
                     updateConfig((prev) => ({ ...prev, scrolling: checked }))
                   }
                   aria-label="Allow scrolling"
+                  size="sm"
                   className="flex-1"
                 >
-                  <span className="mr-2">Allow Scrolling</span>
+                  <span className="text-sm">Allow Scrolling</span>
                 </Switch>
                 <Tooltip
                   content="Allow scrolling within iframe content"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help flex-shrink-0" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                 </Tooltip>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
                 <Switch
                   isSelected={config.allowFullscreen}
                   onValueChange={(checked) =>
@@ -238,19 +238,20 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     }))
                   }
                   aria-label="Allow fullscreen mode"
+                  size="sm"
                   className="flex-1"
                 >
-                  <span className="mr-2">Allow Fullscreen</span>
+                  <span className="text-sm">Allow Fullscreen</span>
                 </Switch>
                 <Tooltip
                   content="Allow iframe content to enter fullscreen mode, which requires internal page support"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help flex-shrink-0" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                 </Tooltip>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
                 <Switch
                   isSelected={config.loading === "lazy"}
                   onValueChange={(checked) =>
@@ -260,15 +261,16 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({
                     }))
                   }
                   aria-label="Enable lazy loading"
+                  size="sm"
                   className="flex-1"
                 >
-                  <span className="mr-2">Lazy Loading</span>
+                  <span className="text-sm">Lazy Loading</span>
                 </Switch>
                 <Tooltip
                   content="Only load content when iframe enters the viewport, which can improve page performance"
                   placement="bottom"
                 >
-                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help flex-shrink-0" />
+                  <HelpCircleIcon className="w-4 h-4 text-gray-600 cursor-help" />
                 </Tooltip>
               </div>
             </div>
