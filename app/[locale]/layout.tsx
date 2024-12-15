@@ -40,10 +40,6 @@ export async function generateMetadata(props: Props) {
   };
 }
 
-export function generateStaticParams() {
-  return localeCodes.map((locale) => ({ locale }));
-}
-
 async function RootLayout(props: LocaleProps) {
   const params = await props.params;
 
